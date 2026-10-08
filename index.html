@@ -15,6 +15,10 @@
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23070a12'/><text y='.9em' x='50' font-size='68' text-anchor='middle'>🤝</text></svg>">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%237c3aed'/><text y='.9em' x='50' font-size='68' text-anchor='middle'>🤝</text></svg>">
+<!-- خط عربي للويب (اختياري): يعمل أونلاين، وبدون إنترنت يرجع تلقائيًا لخطوط الجهاز -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#070a12; --bg2:#0d1222; --card:#121a2e; --card2:#182238; --border:#243256;
@@ -25,7 +29,7 @@
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
   body{
-    font-family:"Segoe UI",Tahoma,"Noto Sans Arabic","Helvetica Neue",Arial,sans-serif;
+    font-family:"Cairo","Segoe UI",Tahoma,"Noto Sans Arabic","Noto Kufi Arabic","Helvetica Neue",Arial,sans-serif;
     background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;
     background-image:radial-gradient(circle at 15% 10%,rgba(124,58,237,.22),transparent 40%),
                      radial-gradient(circle at 85% 90%,rgba(34,211,238,.14),transparent 40%);
@@ -568,7 +572,7 @@
     </section>
   </main>
 
-  <footer>🤝 وسيط — WASIT Gaming Marketplace · الدفع عبر <span class="vf-badge"><i></i> Vodafone Cash</span> · البيانات محفوظة محليًا على هذا الجهاز</footer>
+  <footer>🤝 وسيط — WASIT Gaming Marketplace · الدفع عبر <span class="vf-badge"><i></i> Vodafone Cash</span> · البيانات محفوظة محليًا على هذا الجهاز · <span id="verTag" style="opacity:.6"></span></footer>
 
   <!-- ===== VODAFONE CASH PAYMENT MODAL ===== -->
   <div class="modal" id="payModal" hidden>
@@ -626,6 +630,7 @@
         </div>
         <div class="error" id="payError"></div>
         <button class="btn btn-success btn-block btn-lg" id="payBtn" onclick="submitManualPayment()">إرسال إيصال الدفع وتأكيد الصفقة ✅</button>
+        <div class="secure" id="autoNote"></div>
         <div class="secure">🛡️ يبقى المبلغ محجوزًا لدى وسيط ولا يُحوَّل للبائع إلا بعد تأكيدك الاستلام</div>
       </div>
 
@@ -672,6 +677,13 @@
           <div class="field"><label>رابط Proxy للـ API (اختياري)</label><input type="text" id="sPmProxy" class="ltr" placeholder="https://your-proxy.com/paymob"></div>
         </div>
         <div class="hint" style="font-size:12px;color:var(--muted)">تحصل على المفاتيح من لوحة Paymob: Settings → Account Info. لأمان المفتاح في الإنتاج يُفضّل تمرير الطلبات عبر Proxy خاص بك بدلًا من المتصفح مباشرة.</div>
+      </div>
+      <div class="settings-sec">
+        <h4>🧪 وضع التجربة</h4>
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;background:#0a0f1d;border:1px solid var(--border);border-radius:12px;padding:12px">
+          <input type="checkbox" id="sAuto" style="width:20px;height:20px;accent-color:#22c55e;cursor:pointer">
+          <span><b>تأكيد تلقائي للإيصالات</b><br><span style="font-size:12px;color:var(--muted)">تُعتمد الدفعة فورًا بدون انتظار مراجعة وسيط — مثالي لتجربة الصفقة كاملة. أطفئه عند التشغيل الحقيقي.</span></span>
+        </label>
       </div>
       <div class="error" id="settingsError"></div>
       <div class="actions"><button class="btn btn-primary" onclick="saveSettings()">💾 حفظ الإعدادات</button><button class="btn btn-ghost" onclick="closeModal('settingsModal')">إلغاء</button></div>
@@ -735,23 +747,26 @@ const STATUS = {
 };
 
 /* ---------- Settings (Vodafone Cash wallet + Paymob) ---------- */
-let settings = { wallet: '01000000000', walletName: 'وسيط - WASIT', pmKey: '', pmInt: '', pmProxy: '' };
+let settings = { wallet: '01000000000', walletName: 'وسيط - WASIT', pmKey: '', pmInt: '', pmProxy: '', autoConfirm: true };
 function loadSettings() {
   try { Object.assign(settings, JSON.parse(localStorage.getItem(LS_SETTINGS)) || {}); } catch (e) {}
 }
 function openSettings() {
   $('sWallet').value = settings.wallet; $('sWalletName').value = settings.walletName;
   $('sPmKey').value = settings.pmKey; $('sPmInt').value = settings.pmInt; $('sPmProxy').value = settings.pmProxy;
+  $('sAuto').checked = !!settings.autoConfirm;
   $('settingsError').textContent = '';
   openModal('settingsModal');
 }
 function saveSettings() {
   const w = normPhone($('sWallet').value);
   if (!isEgyptWallet(w)) { $('settingsError').textContent = 'أدخل رقم محفظة مصري صحيح (11 رقم يبدأ بـ 010/011/012/015).'; markBad('sWallet'); return; }
-  settings = { wallet: w, walletName: $('sWalletName').value.trim() || 'وسيط - WASIT', pmKey: $('sPmKey').value.trim(), pmInt: $('sPmInt').value.trim(), pmProxy: $('sPmProxy').value.trim().replace(/\/$/, '') };
+  settings = { wallet: w, walletName: $('sWalletName').value.trim() || 'وسيط - WASIT', pmKey: $('sPmKey').value.trim(), pmInt: $('sPmInt').value.trim(), pmProxy: $('sPmProxy').value.trim().replace(/\/$/, ''), autoConfirm: $('sAuto').checked };
   localStorage.setItem(LS_SETTINGS, JSON.stringify(settings));
   closeModal('settingsModal');
   toast('💾 تم حفظ إعدادات الدفع', 'ok');
+  if ($('screen-dashboard').classList.contains('active')) renderDashboard();
+  if ($('screen-deal').classList.contains('active')) renderDeal();
 }
 /* تحويل الأرقام العربية/الفارسية إلى إنجليزية وإزالة المسافات والشرطات */
 function normDigits(s) {
@@ -813,13 +828,37 @@ function loadDeals() {
   // ترقية الصفقات القديمة
   deals.forEach(d => { if (d.buyerAmount == null) d.buyerAmount = d.price; if (d.sellerPayment === undefined) d.sellerPayment = null; });
 }
-function saveDeals() { localStorage.setItem(LS_DEALS, JSON.stringify(deals)); }
+function saveDeals() {
+  try { localStorage.setItem(LS_DEALS, JSON.stringify(deals)); return true; }
+  catch (e) {
+    // المساحة ممتلئة غالبًا بسبب الصور → نحذف الصور الأقدم ونعيد المحاولة
+    try {
+      deals.forEach(d => {
+        (d.chat || []).forEach(m => { if (m.image) { m.image = null; m.text = (m.text || '') + ' [صورة محذوفة لتوفير المساحة]'; } });
+        [d.payment, d.sellerPayment].forEach(p => { if (p && p.receipt) p.receipt = null; });
+      });
+      localStorage.setItem(LS_DEALS, JSON.stringify(deals));
+      toast('⚠️ مساحة التخزين ممتلئة — تم حذف بعض الصور للحفاظ على بيانات الصفقات', 'bad');
+      return true;
+    } catch (e2) { toast('❌ تعذر الحفظ: مساحة المتصفح ممتلئة', 'bad'); return false; }
+  }
+}
 function loadUser() { try { user = JSON.parse(localStorage.getItem(LS_USER)); } catch (e) { user = null; } }
 function saveUser() { if (user) localStorage.setItem(LS_USER, JSON.stringify(user)); else localStorage.removeItem(LS_USER); }
 function findDeal(code) { return deals.find(d => d.code === code); }
 
 /* ---------- Helpers ---------- */
-function $(id) { return document.getElementById(id); }
+/* $ آمن: لو العنصر غير موجود لأي سبب (نسخة قديمة مخزّنة مؤقتًا مثلًا)
+   نرجّع عنصرًا وهميًا بدل null حتى لا يتوقف التطبيق كله */
+const _ghosts = {};
+function $(id) {
+  const el = document.getElementById(id);
+  if (el) return el;
+  if (!_ghosts[id]) { console.warn('WASIT: العنصر #' + id + ' غير موجود — تم تجاهله'); _ghosts[id] = document.createElement('div'); }
+  return _ghosts[id];
+}
+/* تنفيذ آمن لأي دالة عرض */
+function safe(fn, label) { try { return fn(); } catch (e) { console.error('WASIT error in ' + label, e); } }
 function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 function money(n) { return Number(n).toLocaleString('ar-EG', { maximumFractionDigits: 2 }) + ' ' + CURRENCY; }
 function fmtDate(ts) {
@@ -1046,9 +1085,9 @@ function renderDeal() {
     ${payRow(d.payment, 'دفعة المشتري')}
     ${infoRow('حالة الصفقة', `<span class="badge ${st.cls}">${st.label}</span>`)}`;
 
-  renderTimeline(d);
-  renderActions(d);
-  renderChat(d);
+  safe(() => renderTimeline(d), 'timeline');
+  safe(() => renderActions(d), 'actions');
+  safe(() => renderChat(d), 'chat');
 }
 
 function renderTimeline(d) {
@@ -1103,7 +1142,9 @@ function renderActions(d) {
       } else if (admin) {
         html = `<div class="note">⏳ بانتظار دفع البائع لضمان الجدية (${money(d.escrow)}).</div>`;
       } else {
-        html = `<div class="note">⏳ لم يدفع البائع ضمان الجدية بعد (${money(d.escrow)}). سيتم فتح الدفع لك بعد تأكيد ضمان البائع.</div>`;
+        html = `<div class="note">⏳ لم يدفع البائع ضمان الجدية بعد (${money(d.escrow)})، لذلك الدفع غير متاح لك الآن. راسله في الشات بالأسفل ليدفع ضمانه أولًا.</div>
+          <div class="note info">🧪 تجرب التطبيق بنفسك؟ بدّل الدور إلى <b>🎮 البائع</b> من أعلى الصفحة وادفع الضمان، ثم ارجع لدور المشتري.</div>
+          <div class="actions"><button class="btn btn-primary" onclick="setRole('seller')">🎮 التبديل لدور البائع</button></div>`;
       }
       break;
     }
@@ -1114,7 +1155,8 @@ function renderActions(d) {
           ${receiptCard(p)}
           <div class="actions"><button class="btn btn-success btn-lg" onclick="approveSellerPayment()">✅ تأكيد ضمان البائع وفتح الدفع للمشتري</button><button class="btn btn-danger" onclick="rejectSellerPayment()">❌ رفض الإيصال</button></div>`;
       } else {
-        html = `<div class="note">⏳ ${seller ? 'تم استلام إيصالك' : 'أرسل البائع إيصال الضمان'} وجارٍ التحقق من وصول المبلغ إلى محفظة وسيط.</div>${receiptCard(p)}${adminHint}`;
+        html = `<div class="note">⏳ ${seller ? 'تم استلام إيصالك' : 'أرسل البائع إيصال الضمان'} وجارٍ التحقق من وصول المبلغ إلى محفظة وسيط.</div>${receiptCard(p)}${adminHint}
+          <div class="actions"><button class="btn btn-primary" onclick="setRole('admin')">⚖️ التبديل لدور وسيط للتأكيد</button></div>`;
       }
       break;
     }
@@ -1139,7 +1181,7 @@ function renderActions(d) {
       } else {
         html = `<div class="note">⏳ ${seller ? 'أرسل المشتري إيصال الدفع' : 'تم استلام إيصالك'} وجارٍ التحقق من وصول المبلغ إلى محفظة وسيط. سيتم تفعيل الصفقة فور التأكيد.</div>
           ${receiptCard(p)}${adminHint}
-          <div class="actions">${disputeBtn}</div>`;
+          <div class="actions"><button class="btn btn-primary" onclick="setRole('admin')">⚖️ التبديل لدور وسيط للتأكيد</button>${disputeBtn}</div>`;
       }
       break;
     }
@@ -1354,6 +1396,7 @@ function openPayment(kind) {
   $('ussdLink').href = 'tel:' + encodeURIComponent('*9#');
   $('ussdHint').textContent = isMobile() ? 'سيفتح الاتصال بكود *9# ثم اختر "تحويل أموال"' : 'أنت على الكمبيوتر: استخدم هاتفك للتحويل — اطلب *9# أو تطبيق أنا فودافون';
   $('walletWarn').hidden = !walletNotSet();
+  $('autoNote').textContent = settings.autoConfirm ? '🧪 وضع التجربة مفعّل: سيتم اعتماد الإيصال تلقائيًا فور الإرسال' : '⚖️ سيراجع وسيط الإيصال يدويًا قبل تفعيل الصفقة';
   // reset manual form
   $('vfSender').value = ''; $('vfRef').value = ''; $('vfReceipt').value = '';
   $('receiptPrev').hidden = true; $('receiptPrev').src = ''; $('receiptText').textContent = '📎 اضغط لرفع صورة الإيصال';
@@ -1433,22 +1476,33 @@ function submitManualPayment() {
       d.status = 8; d.history.push({ status: 8, at: Date.now() });
       sysMsg(d, '🧾 أرسل المشتري إيصال دفع ' + money(rec.amount) + ' عبر فودافون كاش — قيد مراجعة وسيط');
     }
-    try { saveDeals(); } catch (e) { rec.receipt = null; saveDeals(); }
+    saveDeals();
     closeModal('payModal');
-    renderDeal();
-    toast('🧾 تم إرسال إيصال فودافون كاش — بانتظار تأكيد الدفع من وسيط', 'ok');
+    if (settings.autoConfirm) {
+      const kind = payKind;
+      renderDeal();
+      toast('🧾 تم استلام الإيصال — جاري التأكيد التلقائي…', 'ok');
+      setTimeout(() => {
+        const dd = findDeal(d.code); if (!dd) return;
+        if (kind === 'seller' && dd.status === 9) approveSellerPayment(true);
+        else if (kind === 'buyer' && dd.status === 8) approvePayment(true);
+      }, 1200);
+    } else {
+      renderDeal();
+      toast('🧾 تم إرسال إيصال فودافون كاش — بانتظار تأكيد وسيط', 'ok');
+    }
   }, 900);
 }
 /* --- approvals (admin / وسيط) --- */
-function approveSellerPayment() {
+function approveSellerPayment(auto) {
   const d = findDeal(currentCode);
   if (!d || d.status !== 9) return;
   d.sellerPayment.verifiedAt = Date.now(); d.sellerPayment.rejected = false;
   d.status = 1;
   d.history.push({ status: 1, at: Date.now() });
-  sysMsg(d, '✅ أكّد وسيط وصول ضمان البائع — الصفقة متاحة الآن للمشتري للدفع');
+  sysMsg(d, (auto ? '🤖 تأكيد تلقائي (وضع التجربة): ' : '✅ أكّد وسيط ') + 'وصول ضمان البائع — الصفقة متاحة الآن للمشتري للدفع');
   saveDeals(); renderDeal();
-  toast('✅ تم تأكيد ضمان البائع — الصفقة متاحة الآن للمشتري', 'ok');
+  toast('✅ تم تأكيد ضمان البائع — شارك الكود مع المشتري', 'ok');
 }
 function rejectSellerPayment() {
   const d = findDeal(currentCode);
@@ -1461,13 +1515,13 @@ function rejectSellerPayment() {
   saveDeals(); renderDeal();
   toast('❌ تم رفض إيصال البائع', 'bad');
 }
-function approvePayment() {
+function approvePayment(auto) {
   const d = findDeal(currentCode);
   if (!d || d.status !== 8) return;
   d.payment.verifiedAt = Date.now(); d.payment.rejected = false;
   d.status = 2;
   d.history.push({ status: 2, at: Date.now() });
-  sysMsg(d, '🔒 أكّد وسيط وصول مبلغ المشتري — يمكن للبائع بدء التسليم الآن');
+  sysMsg(d, (auto ? '🤖 تأكيد تلقائي (وضع التجربة): ' : '🔒 أكّد وسيط ') + 'وصول مبلغ المشتري — يمكن للبائع بدء التسليم الآن');
   saveDeals(); renderDeal();
   toast('🔒 تم تأكيد وصول المبلغ — الصفقة قيد التنفيذ', 'ok');
 }
@@ -1603,7 +1657,14 @@ function resolveDispute() {
 }
 
 /* ---------- Init ---------- */
+const APP_VERSION = 'v1.4';
+window.addEventListener('error', e => {
+  try { console.error(e); toast('⚠️ خطأ (' + APP_VERSION + '): ' + (e.message || '') + ' @' + (e.lineno || '?'), 'bad'); } catch (_) {}
+});
+window.addEventListener('unhandledrejection', e => { console.error(e.reason); });
+
 (function init() {
+  $('verTag').textContent = APP_VERSION;
   loadSettings();
   loadDeals();
   loadUser();
