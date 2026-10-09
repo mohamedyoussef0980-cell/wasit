@@ -297,6 +297,41 @@
   .chat-cta .t span{font-size:13px;color:var(--muted)}
   .typing{font-size:11px;color:var(--muted);min-height:16px;padding:0 4px}
 
+  /* ===== KYC / Verification ===== */
+  .auth-tabs{display:flex;gap:6px;background:#0a0f1d;border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:18px}
+  .auth-tabs button{flex:1;background:transparent;border:none;color:var(--muted);padding:10px;border-radius:9px;cursor:pointer;font:inherit;font-weight:700;font-size:14px;transition:.2s}
+  .auth-tabs button.on{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff}
+  .vbadge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;padding:3px 8px;border-radius:999px;white-space:nowrap}
+  .v-yes{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.45)}
+  .v-pend{background:rgba(245,158,11,.14);color:#fcd34d;border:1px solid rgba(245,158,11,.45)}
+  .v-no{background:rgba(239,68,68,.12);color:#fca5a5;border:1px solid rgba(239,68,68,.4)}
+  .stepper{display:flex;gap:6px;margin-bottom:18px}
+  .stepper div{flex:1;height:5px;border-radius:999px;background:var(--border);transition:.3s}
+  .stepper div.on{background:linear-gradient(90deg,var(--primary2),var(--cyan))}
+  .otp-row{display:flex;gap:8px;justify-content:center;direction:ltr;margin:10px 0}
+  .otp-row input{width:46px;height:54px;text-align:center;font-size:22px;font-weight:800;background:#0a0f1d;border:1px solid var(--border);color:var(--text);border-radius:12px;outline:none}
+  .otp-row input:focus{border-color:var(--primary2);box-shadow:0 0 0 3px rgba(168,85,247,.2)}
+  .up-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+  .up-box{border:2px dashed var(--border);border-radius:14px;padding:14px;text-align:center;cursor:pointer;position:relative;transition:.2s;min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+  .up-box:hover{border-color:var(--primary2)}
+  .up-box.done{border-style:solid;border-color:rgba(34,197,94,.6);background:rgba(34,197,94,.06)}
+  .up-box input{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .up-box .ic{font-size:30px}
+  .up-box b{font-size:13px}
+  .up-box small{font-size:11px;color:var(--muted)}
+  .up-box img{max-width:100%;max-height:90px;border-radius:8px;object-fit:cover}
+  .kyc-status{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:16px;border-radius:14px;margin-bottom:18px}
+  .kyc-status .ic{font-size:36px}
+  .kyc-status b{display:block;font-size:16px}
+  .kyc-status span{font-size:13px;color:var(--muted)}
+  .kyc-pend{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.4)}
+  .kyc-ok{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.4)}
+  .kyc-bad{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.4)}
+  .id-preview{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .id-preview img{width:130px;height:85px;object-fit:cover;border-radius:10px;border:1px solid var(--border);cursor:zoom-in}
+  .trust{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  .trust span{font-size:11px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:999px;padding:3px 9px;color:var(--muted)}
+
   footer{text-align:center;color:var(--muted);font-size:12px;padding:16px;border-top:1px solid rgba(255,255,255,.05)}
   @media(max-width:640px){
     .splash h1{font-size:46px}.splash .logo-big{font-size:84px}
@@ -320,8 +355,9 @@
       <div class="userbox">
         <div class="avatar" id="avatar">U</div>
         <div class="username"><span id="topUserName">مستخدم</span><small id="topUserEmail"></small></div>
+        <span id="cloudDot" title="حالة المزامنة" style="font-size:12px;padding:5px 10px;border-radius:999px;border:1px solid var(--border);cursor:pointer" onclick="openSettings()">📴 محلي</span>
         <button class="btn btn-ghost btn-sm" onclick="goDashboard()">🏠 الرئيسية</button>
-          <button class="btn btn-ghost btn-sm" onclick="openSettings()" title="إعدادات الدفع">⚙️ إعدادات الدفع</button>
+        <button class="btn btn-ghost btn-sm" onclick="openSettings()" title="الإعدادات">⚙️ الإعدادات</button>
         <button class="btn btn-danger btn-sm" onclick="logout()">🚪 تسجيل الخروج</button>
       </div>
     </div>
@@ -356,6 +392,11 @@
             <h2>تسجيل الدخول</h2>
             <p>مرحبًا بك في <b>وسيط</b> — WASIT</p>
           </div>
+          <div class="auth-tabs">
+            <button id="tabLogin" class="on" onclick="setAuthTab('login')">تسجيل الدخول</button>
+            <button id="tabReg" onclick="setAuthTab('reg')">إنشاء حساب جديد</button>
+          </div>
+
           <form id="loginForm" onsubmit="return login(event)">
             <div class="field">
               <label>البريد الإلكتروني (Email)</label>
@@ -368,10 +409,153 @@
             <div class="error" id="loginError"></div>
             <button type="submit" class="btn btn-primary btn-block">تسجيل الدخول</button>
           </form>
-          <div class="demo-box">نسخة تجريبية: أدخل أي بريد وكلمة مرور (6 أحرف على الأقل)<br>
-            <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="quickLogin()">⚡ دخول سريع بحساب تجريبي</button>
+
+          <form id="regForm" hidden onsubmit="return register(event)">
+            <div class="field">
+              <label>الاسم الكامل (كما في بطاقة الرقم القومي) *</label>
+              <input type="text" id="regName" placeholder="محمد أحمد علي" maxlength="60">
+            </div>
+            <div class="row-2">
+              <div class="field">
+                <label>البريد الإلكتروني *</label>
+                <input type="email" id="regEmail" class="ltr" placeholder="you@email.com">
+              </div>
+              <div class="field">
+                <label>رقم الجوال *</label>
+                <input type="tel" id="regPhone" class="ltr" placeholder="01012345678" maxlength="14" inputmode="numeric">
+              </div>
+            </div>
+            <div class="row-2">
+              <div class="field">
+                <label>كلمة المرور *</label>
+                <input type="password" id="regPass" class="ltr" placeholder="6 أحرف على الأقل">
+              </div>
+              <div class="field">
+                <label>تأكيد كلمة المرور *</label>
+                <input type="password" id="regPass2" class="ltr" placeholder="••••••••">
+              </div>
+            </div>
+            <label style="display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--muted);margin-bottom:12px;cursor:pointer">
+              <input type="checkbox" id="regTerms" style="width:18px;height:18px;accent-color:#7c3aed;margin-top:2px">
+              <span>أوافق على <b style="color:var(--text)">شروط الاستخدام</b> وسياسة التوثيق، وأقر بصحة بياناتي.</span>
+            </label>
+            <div class="error" id="regError"></div>
+            <button type="submit" class="btn btn-primary btn-block">إنشاء الحساب ومتابعة التوثيق ✅</button>
+          </form>
+
+          <div class="demo-box" id="demoBox">نسخة تجريبية: يمكنك الدخول بأي بريد وكلمة مرور (6 أحرف على الأقل)<br>
+            <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="quickLogin()">⚡ دخول سريع بحساب تجريبي موثّق</button>
           </div>
           <div style="text-align:center;margin-top:14px"><button class="btn btn-ghost btn-sm" onclick="showScreen('splash')">← رجوع</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== KYC / IDENTITY VERIFICATION ===== -->
+    <section class="screen" id="screen-kyc">
+      <div class="container narrow">
+        <div class="page-head">
+          <div><h1>🪪 توثيق الهوية</h1><p>التوثيق إجباري لإنشاء الصفقات واستلام الأموال — لحماية جميع الأطراف من النصب.</p></div>
+          <button class="btn btn-ghost btn-sm" onclick="goDashboard()">تخطٍ مؤقتًا ←</button>
+        </div>
+
+        <div id="kycStatusBox"></div>
+
+        <div class="card" id="kycFormCard">
+          <div class="stepper"><div id="stp1" class="on"></div><div id="stp2"></div><div id="stp3"></div></div>
+
+          <!-- Step 1: phone OTP -->
+          <div id="kycStep1">
+            <div class="card-title">1️⃣ تأكيد رقم الجوال</div>
+            <div class="card-sub">سنرسل رمز تحقق مكوّن من 6 أرقام إلى رقمك عبر رسالة نصية.</div>
+            <div class="field">
+              <label>رقم الجوال *</label>
+              <input type="tel" id="kPhone" class="ltr" placeholder="01012345678" maxlength="14" inputmode="numeric">
+            </div>
+            <div id="otpBox" hidden>
+              <label style="font-size:13px;font-weight:600;color:var(--muted)">أدخل رمز التحقق</label>
+              <div class="otp-row">
+                <input maxlength="1" inputmode="numeric" oninput="otpMove(this,0)">
+                <input maxlength="1" inputmode="numeric" oninput="otpMove(this,1)">
+                <input maxlength="1" inputmode="numeric" oninput="otpMove(this,2)">
+                <input maxlength="1" inputmode="numeric" oninput="otpMove(this,3)">
+                <input maxlength="1" inputmode="numeric" oninput="otpMove(this,4)">
+                <input maxlength="1" inputmode="numeric" oninput="otpMove(this,5)">
+              </div>
+              <div class="demo-box" id="otpHint"></div>
+            </div>
+            <div class="error" id="kycErr1"></div>
+            <div class="actions">
+              <button class="btn btn-cyan" id="otpSendBtn" onclick="sendOtp()">📩 إرسال رمز التحقق</button>
+              <button class="btn btn-primary" id="otpVerifyBtn" hidden onclick="verifyOtp()">✅ تأكيد الرمز</button>
+            </div>
+          </div>
+
+          <!-- Step 2: personal data -->
+          <div id="kycStep2" hidden>
+            <div class="card-title">2️⃣ البيانات الشخصية</div>
+            <div class="card-sub">يجب أن تطابق البيانات ما هو مكتوب في بطاقة الرقم القومي.</div>
+            <div class="field">
+              <label>الاسم الرباعي كما في البطاقة *</label>
+              <input type="text" id="kName" placeholder="محمد أحمد علي حسن" maxlength="60">
+            </div>
+            <div class="field">
+              <label>الرقم القومي (14 رقمًا) *</label>
+              <input type="text" id="kNid" class="ltr" placeholder="29801011234567" maxlength="14" inputmode="numeric" oninput="parseNid()">
+              <div class="hint" id="nidInfo">سيتم استخراج تاريخ الميلاد والمحافظة تلقائيًا للتحقق.</div>
+            </div>
+            <div class="row-2">
+              <div class="field">
+                <label>تاريخ الميلاد *</label>
+                <input type="date" id="kDob" class="ltr">
+              </div>
+              <div class="field">
+                <label>المحافظة *</label>
+                <input type="text" id="kGov" placeholder="القاهرة">
+              </div>
+            </div>
+            <div class="field">
+              <label>العنوان بالتفصيل *</label>
+              <input type="text" id="kAddr" placeholder="المدينة - الحي - الشارع" maxlength="120">
+            </div>
+            <div class="error" id="kycErr2"></div>
+            <div class="actions">
+              <button class="btn btn-ghost" onclick="kycStep(1)">← السابق</button>
+              <button class="btn btn-primary" onclick="kycNext2()">التالي →</button>
+            </div>
+          </div>
+
+          <!-- Step 3: documents -->
+          <div id="kycStep3" hidden>
+            <div class="card-title">3️⃣ صور إثبات الهوية</div>
+            <div class="card-sub">صور واضحة وغير مقصوصة — تُستخدم للتحقق فقط ولا تظهر للطرف الآخر.</div>
+            <div class="up-grid">
+              <label class="up-box" id="boxFront"><input type="file" accept="image/*" onchange="kycUpload(this,'front')">
+                <span class="ic">🪪</span><b>وجه البطاقة</b><small>الأمامي</small></label>
+              <label class="up-box" id="boxBack"><input type="file" accept="image/*" onchange="kycUpload(this,'back')">
+                <span class="ic">🔄</span><b>ظهر البطاقة</b><small>الخلفي</small></label>
+              <label class="up-box" id="boxSelfie"><input type="file" accept="image/*" capture="user" onchange="kycUpload(this,'selfie')">
+                <span class="ic">🤳</span><b>سيلفي مع البطاقة</b><small>الوجه واضح</small></label>
+            </div>
+            <label style="display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--muted);margin:14px 0;cursor:pointer">
+              <input type="checkbox" id="kConsent" style="width:18px;height:18px;accent-color:#7c3aed;margin-top:2px">
+              <span>أقر بأن جميع البيانات والمستندات المرفقة صحيحة وتخصني شخصيًا، وأتحمل المسؤولية القانونية الكاملة عند مخالفة ذلك.</span>
+            </label>
+            <div class="error" id="kycErr3"></div>
+            <div class="actions">
+              <button class="btn btn-ghost" onclick="kycStep(2)">← السابق</button>
+              <button class="btn btn-success btn-lg" onclick="submitKyc()">🚀 إرسال طلب التوثيق</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <div class="card-title">🛡️ لماذا التوثيق؟</div>
+          <div class="info-list">
+            <div class="info-row"><span class="k">منع النصب</span><span class="v">كل طرف يعرف أنه يتعامل مع شخص حقيقي موثّق الهوية</span></div>
+            <div class="info-row"><span class="k">حل النزاعات</span><span class="v">يمكن لوسيط اتخاذ إجراء قانوني عند الاحتيال</span></div>
+            <div class="info-row"><span class="k">خصوصيتك</span><span class="v">مستنداتك لا تظهر للطرف الآخر — فقط شارة "موثّق ✅"</span></div>
+          </div>
         </div>
       </div>
     </section>
@@ -387,6 +571,11 @@
           <span>⚠️ لم يتم ضبط رقم محفظة فودافون كاش التي تستقبل الضمان — الدفع لن يصل لأي مكان حتى تضبطه.</span>
           <button class="btn btn-danger btn-sm" onclick="openSettings()">⚙️ ضبط المحفظة الآن</button>
         </div>
+        <div class="note" id="dashCloudWarn" hidden style="margin:0 0 18px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+          <span>📴 المزامنة التلقائية مُعطّلة — الصفقات محفوظة على هذا الجهاز فقط ولن يجدها المشتري بالكود.</span>
+          <button class="btn btn-cyan btn-sm" onclick="openSettings()">تفعيل المزامنة</button>
+        </div>
+        <div id="dashKyc"></div>
         <div class="stats">
           <div class="stat"><b id="statTotal">0</b><span>إجمالي الصفقات</span></div>
           <div class="stat"><b id="statActive">0</b><span>قيد التنفيذ</span></div>
@@ -468,6 +657,11 @@
             <button class="btn btn-cyan btn-sm" onclick="copyText(document.getElementById('createdCode').textContent)">📋 نسخ الكود</button>
           </div>
           <div class="info-list" id="createdInfo"></div>
+          <div class="note ok" style="margin-top:14px" id="createdSync">☁️ تمت مزامنة الصفقة تلقائيًا — أرسل الكود <b id="createdCode2"></b> للمشتري وسيجده من أي جهاز.</div>
+          <div class="actions">
+            <button class="btn btn-success" onclick="waShare(document.getElementById('createdCode').textContent)">📲 إرسال عبر واتساب</button>
+            <button class="btn btn-cyan" onclick="shareDeal(document.getElementById('createdCode').textContent)">🔗 نسخ رابط الصفقة</button>
+          </div>
           <div class="actions">
             <button class="btn btn-primary" id="createdOpenBtn">📄 فتح تفاصيل الصفقة</button>
             <button class="btn btn-ghost" onclick="goDashboard()">🏠 الرئيسية</button>
@@ -679,6 +873,19 @@
         <div class="hint" style="font-size:12px;color:var(--muted)">تحصل على المفاتيح من لوحة Paymob: Settings → Account Info. لأمان المفتاح في الإنتاج يُفضّل تمرير الطلبات عبر Proxy خاص بك بدلًا من المتصفح مباشرة.</div>
       </div>
       <div class="settings-sec">
+        <h4>☁️ المزامنة بين الأجهزة</h4>
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;background:#0a0f1d;border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px">
+          <input type="checkbox" id="sAutoSync" style="width:20px;height:20px;accent-color:#22d3ee;cursor:pointer">
+          <span><b>مزامنة تلقائية (مفعّلة)</b><br><span style="font-size:12px;color:var(--muted)">تعمل فورًا بدون أي إعداد — البائع ينشئ الصفقة والمشتري يجدها بالكود من أي جهاز. (خادم عام مجاني، الصفقة تبقى متاحة 12 ساعة)</span></span>
+        </label>
+        <div class="field">
+          <label>خادم خاص بك — Firebase Realtime Database (اختياري للتخزين الدائم)</label>
+          <input type="text" id="sCloud" class="ltr" placeholder="https://wasit-xxxx-default-rtdb.firebaseio.com">
+          <div class="hint" style="font-size:12px;color:var(--muted)">للتخزين الدائم: console.firebase.google.com ← Realtime Database ← Test mode ← انسخ الرابط هنا.</div>
+        </div>
+        <div class="actions"><button class="btn btn-cyan btn-sm" onclick="testCloud()">🔌 اختبار الاتصال</button><span id="cloudTest" style="font-size:13px;align-self:center"></span></div>
+      </div>
+      <div class="settings-sec">
         <h4>🧪 وضع التجربة</h4>
         <label style="display:flex;align-items:center;gap:10px;cursor:pointer;background:#0a0f1d;border:1px solid var(--border);border-radius:12px;padding:12px">
           <input type="checkbox" id="sAuto" style="width:20px;height:20px;accent-color:#22c55e;cursor:pointer">
@@ -747,7 +954,7 @@ const STATUS = {
 };
 
 /* ---------- Settings (Vodafone Cash wallet + Paymob) ---------- */
-let settings = { wallet: '01000000000', walletName: 'وسيط - WASIT', pmKey: '', pmInt: '', pmProxy: '', autoConfirm: true };
+let settings = { wallet: '01000000000', walletName: 'وسيط - WASIT', pmKey: '', pmInt: '', pmProxy: '', autoConfirm: true, cloudUrl: '' };
 function loadSettings() {
   try { Object.assign(settings, JSON.parse(localStorage.getItem(LS_SETTINGS)) || {}); } catch (e) {}
 }
@@ -755,18 +962,204 @@ function openSettings() {
   $('sWallet').value = settings.wallet; $('sWalletName').value = settings.walletName;
   $('sPmKey').value = settings.pmKey; $('sPmInt').value = settings.pmInt; $('sPmProxy').value = settings.pmProxy;
   $('sAuto').checked = !!settings.autoConfirm;
+  $('sCloud').value = settings.cloudUrl || '';
+  $('sAutoSync').checked = autoOn();
+  $('cloudTest').textContent = '';
   $('settingsError').textContent = '';
   openModal('settingsModal');
 }
 function saveSettings() {
   const w = normPhone($('sWallet').value);
   if (!isEgyptWallet(w)) { $('settingsError').textContent = 'أدخل رقم محفظة مصري صحيح (11 رقم يبدأ بـ 010/011/012/015).'; markBad('sWallet'); return; }
-  settings = { wallet: w, walletName: $('sWalletName').value.trim() || 'وسيط - WASIT', pmKey: $('sPmKey').value.trim(), pmInt: $('sPmInt').value.trim(), pmProxy: $('sPmProxy').value.trim().replace(/\/$/, ''), autoConfirm: $('sAuto').checked };
+  settings = { wallet: w, walletName: $('sWalletName').value.trim() || 'وسيط - WASIT', pmKey: $('sPmKey').value.trim(), pmInt: $('sPmInt').value.trim(), pmProxy: $('sPmProxy').value.trim().replace(/\/$/, ''), autoConfirm: $('sAuto').checked, cloudUrl: cleanCloudUrl($('sCloud').value), autoSync: $('sAutoSync').checked };
   localStorage.setItem(LS_SETTINGS, JSON.stringify(settings));
   closeModal('settingsModal');
-  toast('💾 تم حفظ إعدادات الدفع', 'ok');
+  toast('💾 تم حفظ الإعدادات', 'ok');
+  updateCloudDot();
+  if (cloudOn()) deals.forEach(d => cloudSave(d));
   if ($('screen-dashboard').classList.contains('active')) renderDashboard();
   if ($('screen-deal').classList.contains('active')) renderDeal();
+}
+
+/* =========================================================
+   🔗 مشاركة الصفقة برابط (يعمل بين الأجهزة بدون أي إعدادات)
+   ========================================================= */
+function b64enc(str) { const bytes = new TextEncoder().encode(str); let bin = ''; bytes.forEach(b => bin += String.fromCharCode(b)); return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+function b64dec(s) { s = s.replace(/-/g, '+').replace(/_/g, '/'); const bin = atob(s); const bytes = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i); return new TextDecoder().decode(bytes); }
+function encodeDeal(d) {
+  const c = JSON.parse(JSON.stringify(d));
+  (c.chat || []).forEach(m => { if (m.image) m.image = null; });
+  [c.payment, c.sellerPayment].forEach(p => { if (p) p.receipt = null; });
+  delete c.lastRead;
+  return b64enc(JSON.stringify(c));
+}
+function dealLink(d) { return location.origin + location.pathname + '#d=' + encodeDeal(d); }
+function shareDeal(code) {
+  const d = findDeal(code); if (!d) return;
+  const link = dealLink(d);
+  const txt = `🤝 صفقة وسيط\n${d.product}\nالسعر: ${money(d.price)}\nكود الصفقة: ${d.code}\n\nافتح الرابط للدخول للصفقة مباشرة:\n${link}`;
+  if (navigator.share) { navigator.share({ title: 'صفقة وسيط ' + d.code, text: txt }).catch(() => copyText(link)); }
+  else copyText(link);
+  toast('🔗 تم تجهيز رابط الصفقة — أرسله للمشتري', 'ok');
+}
+function waShare(code) {
+  const d = findDeal(code); if (!d) return;
+  const txt = `🤝 *صفقة وسيط*\n${d.product}\nالسعر: ${money(d.price)}\nكود الصفقة: *${d.code}*\n\nافتح الرابط للدخول للصفقة:\n${dealLink(d)}`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
+}
+function importFromHash() {
+  const h = location.hash || '';
+  if (!h.startsWith('#d=')) return null;
+  try {
+    const d = JSON.parse(b64dec(h.slice(3)));
+    if (!d || !d.code) return null;
+    history.replaceState(null, '', location.pathname);
+    return d;
+  } catch (e) { console.warn('رابط صفقة غير صالح', e); return null; }
+}
+
+/* =========================================================
+   ☁️ المزامنة بين الأجهزة عبر Firebase Realtime Database (REST)
+   ========================================================= */
+let cloudOk = false, cloudBusy = false, applyingRemote = false;
+function cleanCloudUrl(v) { return String(v || '').trim().replace(/\/+$/, '').replace(/\.json$/, ''); }
+/* المزامنة التلقائية مفعّلة دائمًا ما لم يُعطّلها المستخدم */
+function autoOn() { return settings.autoSync !== false; }
+function cloudOn() { return autoOn() || !!settings.cloudUrl; }
+function fbOn() { return !!settings.cloudUrl; }
+function cloudRef(code) { return settings.cloudUrl + '/deals/' + encodeURIComponent(code) + '.json'; }
+function updateCloudDot() {
+  const el = $('cloudDot');
+  if (!cloudOn()) { el.textContent = '📴 محلي'; el.style.borderColor = 'var(--border)'; el.style.color = 'var(--muted)'; el.title = 'البيانات على هذا الجهاز فقط'; }
+  else if (cloudOk) { el.textContent = '☁️ متزامن'; el.style.borderColor = 'rgba(34,197,94,.5)'; el.style.color = '#4ade80'; el.title = 'المزامنة التلقائية تعمل بين الأجهزة'; }
+  else { el.textContent = '🔄 جاري الربط'; el.style.borderColor = 'rgba(245,158,11,.5)'; el.style.color = '#fcd34d'; el.title = 'جاري الاتصال بخادم المزامنة'; }
+}
+
+/* ---------- المزامنة التلقائية عبر ntfy.sh (بدون تسجيل ولا مفاتيح) ---------- */
+const SYNC_SERVER = 'https://ntfy.sh';
+const TOPIC_PREFIX = 'wasitapp7k3x';
+const lastSince = {};
+function topicOf(code) { return TOPIC_PREFIX + String(code).replace(/\D/g, ''); }
+function compactDeal(d, maxChat) {
+  const c = JSON.parse(JSON.stringify(d));
+  delete c.lastRead; delete c.buyerJoinedAt;
+  if (c.desc && c.desc.length > 400) c.desc = c.desc.slice(0, 400) + '…';
+  (c.chat || []).forEach(m => { if (m.image) { m.image = null; m.text = (m.text || '') + ' 📎[صورة متاحة على جهاز المُرسل]'; } });
+  if (c.chat && c.chat.length > maxChat) c.chat = c.chat.slice(-maxChat);
+  [c.payment, c.sellerPayment].forEach(p => { if (p) p.receipt = null; });
+  return c;
+}
+async function autoPush(d) {
+  if (!autoOn() || !d || applyingRemote) return;
+  d.updatedAt = Date.now();
+  let n = 30, body = JSON.stringify(compactDeal(d, n));
+  while (body.length > 3800 && n > 1) { n = Math.floor(n / 2); body = JSON.stringify(compactDeal(d, n)); }
+  if (body.length > 3800) return;
+  try { const r = await fetch(SYNC_SERVER + '/' + topicOf(d.code), { method: 'POST', body }); cloudOk = r.ok; }
+  catch (e) { cloudOk = false; }
+  updateCloudDot();
+}
+async function autoPull(code, all) {
+  if (!autoOn()) return null;
+  const since = all ? 'all' : (lastSince[code] || '15m');
+  try {
+    const r = await fetch(SYNC_SERVER + '/' + topicOf(code) + '/json?poll=1&since=' + since);
+    if (!r.ok) { cloudOk = false; updateCloudDot(); return null; }
+    cloudOk = true; updateCloudDot();
+    const txt = await r.text();
+    let latest = null, best = -1;
+    txt.trim().split('\n').filter(Boolean).forEach(line => {
+      try {
+        const o = JSON.parse(line);
+        if (o.time) lastSince[code] = o.time + 1;
+        if (o.event !== 'message' || !o.message) return;
+        const d = JSON.parse(o.message);
+        if (d && d.code === code && (d.updatedAt || 0) >= best) { best = d.updatedAt || 0; latest = d; }
+      } catch (_) {}
+    });
+    return latest;
+  } catch (e) { cloudOk = false; updateCloudDot(); return null; }
+}
+function slimDeal(d) {
+  const c = JSON.parse(JSON.stringify(d));
+  if (JSON.stringify(c).length > 500000) {
+    (c.chat || []).forEach(m => { if (m.image) { m.image = null; m.text = (m.text || '') + ' [صورة كبيرة لم تُرفع]'; } });
+    [c.payment, c.sellerPayment].forEach(p => { if (p) p.receipt = null; });
+  }
+  return c;
+}
+async function cloudSave(d) {
+  if (!d || applyingRemote) return;
+  autoPush(d);
+  if (!fbOn()) return;
+  d.updatedAt = Date.now();
+  try { const r = await fetch(cloudRef(d.code), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(slimDeal(d)) }); cloudOk = r.ok || cloudOk; }
+  catch (e) {}
+  updateCloudDot();
+}
+async function cloudGet(code, all) {
+  if (fbOn()) {
+    try {
+      const r = await fetch(cloudRef(code) + '?t=' + Date.now());
+      if (r.ok) { const j = await r.json(); cloudOk = true; updateCloudDot(); if (j && j.code) return j; }
+    } catch (e) {}
+  }
+  return await autoPull(code, all);
+}
+/* دمج النسخة السحابية مع المحلية (رسائل الشات تُدمج بالـ id) */
+function mergeDeal(remote) {
+  const i = deals.findIndex(x => x.code === remote.code);
+  if (i === -1) { deals.push(remote); return true; }
+  const local = deals[i];
+  const lu = local.updatedAt || 0, ru = remote.updatedAt || 0;
+  const chat = [];
+  const seen = new Set();
+  [...(local.chat || []), ...(remote.chat || [])].forEach(m => { const k = m.id + '|' + m.at; if (!seen.has(k)) { seen.add(k); chat.push(m); } });
+  chat.sort((a, b) => a.at - b.at);
+  const base = ru >= lu ? remote : local;
+  const merged = Object.assign({}, local, base, { chat, lastRead: local.lastRead || {} });
+  const changed = JSON.stringify(merged) !== JSON.stringify(local);
+  deals[i] = merged;
+  return changed;
+}
+async function cloudTick() {
+  if (!cloudOn() || cloudBusy || document.hidden) return;
+  cloudBusy = true;
+  try {
+    if ($('screen-deal').classList.contains('active') && currentCode) {
+      const remote = await cloudGet(currentCode);
+      if (remote) {
+        const before = JSON.stringify((findDeal(currentCode) || {}).chat || []);
+        applyingRemote = true;
+        const ch = mergeDeal(remote);
+        applyingRemote = false;
+        if (ch) {
+          localStorage.setItem(LS_DEALS, JSON.stringify(deals));
+          renderDeal();
+          const d = findDeal(currentCode);
+          const after = JSON.stringify(d.chat || []);
+          if (after !== before) { const last = (d.chat || []).slice(-1)[0]; if (last && last.by !== currentRole && last.by !== 'system') toast('💬 رسالة جديدة من ' + (ROLE_NAME[last.by] || last.by)); }
+        }
+      }
+    } else if ($('screen-dashboard').classList.contains('active')) {
+      let any = false;
+      const recent = [...deals].sort((a, b) => (b.updatedAt || b.createdAt) - (a.updatedAt || a.createdAt)).slice(0, 2);
+      for (const d0 of recent) { const r = await cloudGet(d0.code); if (r) { applyingRemote = true; if (mergeDeal(r)) any = true; applyingRemote = false; } }
+      if (any) { localStorage.setItem(LS_DEALS, JSON.stringify(deals)); renderDashboard(); }
+    }
+  } catch (e) { /* تجاهل */ }
+  cloudBusy = false;
+}
+async function testCloud() {
+  const url = cleanCloudUrl($('sCloud').value);
+  const out = $('cloudTest');
+  if (!url) { out.textContent = '⚠️ أدخل الرابط أولًا'; out.style.color = '#fcd34d'; return; }
+  out.textContent = '⏳ جاري الاختبار…'; out.style.color = 'var(--muted)';
+  try {
+    const r = await fetch(url + '/_ping.json', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ at: Date.now() }) });
+    if (r.ok) { out.textContent = '✅ الاتصال ناجح — اضغط حفظ'; out.style.color = '#4ade80'; }
+    else { const t = await r.text(); out.textContent = '❌ مرفوض (' + r.status + ') — تأكد أن القواعد Test mode'; out.style.color = '#fca5a5'; console.warn(t); }
+  } catch (e) { out.textContent = '❌ فشل الاتصال — تأكد من الرابط والإنترنت'; out.style.color = '#fca5a5'; }
 }
 /* تحويل الأرقام العربية/الفارسية إلى إنجليزية وإزالة المسافات والشرطات */
 function normDigits(s) {
@@ -793,6 +1186,7 @@ let deals = [];
 let user = null;
 let currentCode = null;
 let currentRole = 'buyer';
+let pendingShared = null;
 
 /* ---------- Storage ---------- */
 function loadDeals() {
@@ -828,7 +1222,8 @@ function loadDeals() {
   // ترقية الصفقات القديمة
   deals.forEach(d => { if (d.buyerAmount == null) d.buyerAmount = d.price; if (d.sellerPayment === undefined) d.sellerPayment = null; });
 }
-function saveDeals() {
+function saveDeals(push = true) {
+  if (push && cloudOn()) { const d = currentCode ? findDeal(currentCode) : null; if (d) cloudSave(d); }
   try { localStorage.setItem(LS_DEALS, JSON.stringify(deals)); return true; }
   catch (e) {
     // المساحة ممتلئة غالبًا بسبب الصور → نحذف الصور الأقدم ونعيد المحاولة
@@ -904,30 +1299,211 @@ function showScreen(name) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 function goDashboard() { renderDashboard(); showScreen('dashboard'); }
-function goSeller() { $('dealForm').reset(); $('dealError').textContent = ''; showScreen('seller'); }
+function goSeller() { if (!requireKyc('إنشاء صفقة')) return; $('dealForm').reset(); $('dealError').textContent = ''; showScreen('seller'); }
 function goBuyer() { $('codeInput').value = ''; $('codeError').textContent = ''; showScreen('buyer'); setTimeout(() => $('codeInput').focus(), 100); }
 
-/* ---------- Auth ---------- */
+/* =========================================================
+   Auth + KYC (توثيق الهوية)
+   ========================================================= */
+const LS_USERS = 'wasit_users_v1';
+let users = {};
+function loadUsers() { try { users = JSON.parse(localStorage.getItem(LS_USERS)) || {}; } catch (e) { users = {}; } }
+function saveUsers() { try { localStorage.setItem(LS_USERS, JSON.stringify(users)); } catch (e) {} }
+function kycOf(u) { return (u && u.kyc) || { status: 'none' }; }
+function isVerified(u) { return kycOf(u).status === 'verified'; }
+function vBadge(status) {
+  if (status === 'verified') return '<span class="vbadge v-yes">✅ موثّق</span>';
+  if (status === 'pending') return '<span class="vbadge v-pend">⏳ قيد التوثيق</span>';
+  return '<span class="vbadge v-no">⚠️ غير موثّق</span>';
+}
+function setAuthTab(t) {
+  $('tabLogin').classList.toggle('on', t === 'login');
+  $('tabReg').classList.toggle('on', t === 'reg');
+  $('loginForm').hidden = t !== 'login';
+  $('regForm').hidden = t !== 'reg';
+  $('demoBox').hidden = t !== 'login';
+}
+
 function login(e) {
   e.preventDefault();
-  const email = $('loginEmail').value.trim();
+  const email = $('loginEmail').value.trim().toLowerCase();
   const pass = $('loginPass').value;
   const err = $('loginError');
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'يرجى إدخال بريد إلكتروني صحيح.'; return false; }
   if (pass.length < 6) { err.textContent = 'كلمة المرور يجب أن تكون 6 أحرف على الأقل.'; return false; }
+  const existing = users[email];
+  if (existing && existing.pass && existing.pass !== pass) { err.textContent = 'كلمة المرور غير صحيحة لهذا الحساب.'; return false; }
   err.textContent = '';
-  const name = email.split('@')[0];
-  user = { name, email };
-  saveUser();
-  applyUser();
-  toast('مرحبًا ' + name + ' 👋', 'ok');
-  goDashboard();
+  user = existing || { name: email.split('@')[0], email, pass, phone: '', kyc: { status: 'none' }, createdAt: Date.now() };
+  users[email] = user; saveUsers(); saveUser(); applyUser();
+  toast('مرحبًا ' + user.name + ' 👋', 'ok');
+  if (pendingShared) { const c = pendingShared; pendingShared = null; openDeal(c, 'buyer'); }
+  else if (!isVerified(user) && kycOf(user).status !== 'pending') goKyc();
+  else goDashboard();
+  return false;
+}
+function register(e) {
+  e.preventDefault();
+  const name = $('regName').value.trim();
+  const email = $('regEmail').value.trim().toLowerCase();
+  const phone = normPhone($('regPhone').value);
+  const p1 = $('regPass').value, p2 = $('regPass2').value;
+  const err = $('regError');
+  if (name.split(/\s+/).filter(Boolean).length < 2) { err.textContent = 'أدخل الاسم الكامل (اسمين على الأقل).'; markBad('regName'); return false; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'بريد إلكتروني غير صحيح.'; markBad('regEmail'); return false; }
+  if (users[email]) { err.textContent = 'هذا البريد مسجّل بالفعل — سجّل الدخول بدلًا من ذلك.'; return false; }
+  if (!isEgyptWallet(phone)) { err.textContent = 'رقم جوال مصري غير صحيح (01xxxxxxxxx).'; markBad('regPhone'); return false; }
+  if (p1.length < 6) { err.textContent = 'كلمة المرور 6 أحرف على الأقل.'; markBad('regPass'); return false; }
+  if (p1 !== p2) { err.textContent = 'كلمتا المرور غير متطابقتين.'; markBad('regPass2'); return false; }
+  if (!$('regTerms').checked) { err.textContent = 'يجب الموافقة على الشروط.'; return false; }
+  err.textContent = '';
+  user = { name, email, pass: p1, phone, kyc: { status: 'none' }, createdAt: Date.now() };
+  users[email] = user; saveUsers(); saveUser(); applyUser();
+  toast('🎉 تم إنشاء حسابك — أكمل التوثيق الآن', 'ok');
+  goKyc();
   return false;
 }
 function quickLogin() {
-  $('loginEmail').value = 'progamerx@wasit.gg';
-  $('loginPass').value = 'demo1234';
+  const email = 'progamerx@wasit.gg';
+  users[email] = { name: 'ProGamerX', email, pass: 'demo1234', phone: '01012345678', createdAt: Date.now(),
+    kyc: { status: 'verified', name: 'محمد أحمد علي حسن', nid: '29801011234567', dob: '1998-01-01', gov: 'القاهرة', addr: 'القاهرة - مدينة نصر', phone: '01012345678', at: Date.now(), verifiedAt: Date.now() } };
+  saveUsers();
+  $('loginEmail').value = email; $('loginPass').value = 'demo1234';
   $('loginForm').requestSubmit();
+}
+
+/* ---------- KYC flow ---------- */
+let kycDocs = { front: null, back: null, selfie: null };
+let otpCode = null;
+function goKyc() { renderKyc(); showScreen('kyc'); }
+function kycStep(n) {
+  [1, 2, 3].forEach(i => { $('kycStep' + i).hidden = i !== n; $('stp' + i).classList.toggle('on', i <= n); });
+}
+function renderKyc() {
+  const k = kycOf(user);
+  const box = $('kycStatusBox');
+  if (k.status === 'pending') {
+    box.innerHTML = `<div class="kyc-status kyc-pend"><span class="ic">⏳</span><div><b>طلب التوثيق قيد المراجعة</b><span>تمت المراجعة عادةً خلال دقائق. سنُعلمك فور الانتهاء.</span></div>
+      <button class="btn btn-ghost btn-sm" onclick="goDashboard()">الرئيسية</button></div>`;
+    $('kycFormCard').hidden = true;
+  } else if (k.status === 'verified') {
+    box.innerHTML = `<div class="kyc-status kyc-ok"><span class="ic">✅</span><div><b>حسابك موثّق بالكامل</b><span>${esc(k.name || user.name)} · رقم قومي ينتهي بـ ${esc(String(k.nid || '').slice(-4))} · ${esc(k.gov || '')}</span>
+      <div class="trust"><span>📱 جوال مؤكد</span><span>🪪 هوية مؤكدة</span><span>🤳 سيلفي مطابق</span></div></div>
+      <button class="btn btn-primary btn-sm" onclick="goDashboard()">متابعة →</button></div>`;
+    $('kycFormCard').hidden = true;
+  } else if (k.status === 'rejected') {
+    box.innerHTML = `<div class="kyc-status kyc-bad"><span class="ic">❌</span><div><b>تم رفض طلب التوثيق</b><span>${esc(k.reason || 'المستندات غير واضحة')} — يرجى إعادة الإرسال ببيانات صحيحة.</span></div></div>`;
+    $('kycFormCard').hidden = false; kycStep(1);
+  } else {
+    box.innerHTML = '';
+    $('kycFormCard').hidden = false; kycStep(1);
+  }
+  $('kPhone').value = user.phone || '';
+  ['kycErr1', 'kycErr2', 'kycErr3'].forEach(i => $(i).textContent = '');
+}
+function sendOtp() {
+  const phone = normPhone($('kPhone').value);
+  if (!isEgyptWallet(phone)) { $('kycErr1').textContent = 'أدخل رقم جوال مصري صحيح.'; markBad('kPhone'); return; }
+  otpCode = String(Math.floor(100000 + Math.random() * 900000));
+  user.phone = phone;
+  $('otpBox').hidden = false; $('otpVerifyBtn').hidden = false;
+  $('otpSendBtn').textContent = '🔄 إعادة الإرسال';
+  $('otpHint').innerHTML = '📩 رمز التحقق التجريبي: <b class="ltr" style="color:var(--cyan);font-size:18px;letter-spacing:3px">' + otpCode + '</b><br><small>في النسخة الحقيقية يصلك عبر SMS</small>';
+  $('kycErr1').textContent = '';
+  toast('📩 تم إرسال رمز التحقق: ' + otpCode, 'ok');
+}
+function otpMove(el, i) {
+  el.value = normDigits(el.value).replace(/\D/g, '');
+  const inputs = document.querySelectorAll('.otp-row input');
+  if (el.value && i < 5) inputs[i + 1].focus();
+}
+function verifyOtp() {
+  const code = [...document.querySelectorAll('.otp-row input')].map(i => i.value).join('');
+  if (code.length !== 6) { $('kycErr1').textContent = 'أدخل الرمز المكوّن من 6 أرقام.'; return; }
+  if (code !== otpCode) { $('kycErr1').textContent = 'الرمز غير صحيح. تأكد من الرمز المرسل.'; return; }
+  $('kycErr1').textContent = '';
+  toast('✅ تم تأكيد رقم الجوال', 'ok');
+  $('kName').value = kycOf(user).name || user.name || '';
+  kycStep(2);
+}
+/* استخراج بيانات الرقم القومي المصري */
+const GOVS = { '01': 'القاهرة', '02': 'الإسكندرية', '03': 'بورسعيد', '04': 'السويس', '11': 'دمياط', '12': 'الدقهلية', '13': 'الشرقية', '14': 'القليوبية', '15': 'كفر الشيخ', '16': 'الغربية', '17': 'المنوفية', '18': 'البحيرة', '19': 'الإسماعيلية', '21': 'الجيزة', '22': 'بني سويف', '23': 'الفيوم', '24': 'المنيا', '25': 'أسيوط', '26': 'سوهاج', '27': 'قنا', '28': 'أسوان', '29': 'الأقصر', '31': 'البحر الأحمر', '32': 'الوادي الجديد', '33': 'مطروح', '34': 'شمال سيناء', '35': 'جنوب سيناء', '88': 'خارج الجمهورية' };
+function parseNid() {
+  const el = $('kNid'); el.value = normDigits(el.value).replace(/\D/g, '').slice(0, 14);
+  const n = el.value;
+  const info = $('nidInfo');
+  if (n.length < 14) { info.textContent = 'سيتم استخراج تاريخ الميلاد والمحافظة تلقائيًا للتحقق. (' + n.length + '/14)'; info.style.color = 'var(--muted)'; return false; }
+  const c = n[0] === '2' ? 1900 : n[0] === '3' ? 2000 : null;
+  const y = +n.slice(1, 3), m = +n.slice(3, 5), day = +n.slice(5, 7), gov = GOVS[n.slice(7, 9)];
+  if (!c || m < 1 || m > 12 || day < 1 || day > 31 || !gov) { info.textContent = '❌ الرقم القومي غير صالح.'; info.style.color = '#fca5a5'; return false; }
+  const dob = (c + y) + '-' + String(m).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+  const gender = (+n[12]) % 2 === 0 ? 'أنثى' : 'ذكر';
+  const age = new Date().getFullYear() - (c + y);
+  $('kDob').value = dob; $('kGov').value = gov;
+  if (age < 18) { info.textContent = '❌ يجب أن يكون عمرك 18 عامًا فأكثر (العمر: ' + age + ').'; info.style.color = '#fca5a5'; return false; }
+  info.innerHTML = '✅ صالح · ' + gender + ' · المحافظة: ' + gov + ' · العمر: ' + age + ' سنة'; info.style.color = '#4ade80';
+  return true;
+}
+function kycNext2() {
+  const err = $('kycErr2');
+  if ($('kName').value.trim().split(/\s+/).filter(Boolean).length < 3) { err.textContent = 'أدخل الاسم الثلاثي أو الرباعي كما في البطاقة.'; markBad('kName'); return; }
+  if (!parseNid()) { err.textContent = 'الرقم القومي غير صحيح أو العمر أقل من 18.'; markBad('kNid'); return; }
+  if (!$('kDob').value) { err.textContent = 'أدخل تاريخ الميلاد.'; markBad('kDob'); return; }
+  if ($('kAddr').value.trim().length < 8) { err.textContent = 'أدخل عنوانًا تفصيليًا.'; markBad('kAddr'); return; }
+  err.textContent = ''; kycStep(3);
+}
+function kycUpload(input, kind) {
+  const file = input.files && input.files[0]; if (!file) return;
+  if (!file.type.startsWith('image/')) { $('kycErr3').textContent = 'الملف يجب أن يكون صورة.'; return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const max = 800; let w = img.width, h = img.height;
+      if (w > max || h > max) { const r = Math.min(max / w, max / h); w = Math.round(w * r); h = Math.round(h * r); }
+      const c = document.createElement('canvas'); c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      kycDocs[kind] = c.toDataURL('image/jpeg', 0.7);
+      const box = $(kind === 'front' ? 'boxFront' : kind === 'back' ? 'boxBack' : 'boxSelfie');
+      box.classList.add('done');
+      box.innerHTML = '<input type="file" accept="image/*" onchange="kycUpload(this,\'' + kind + '\')"><img src="' + kycDocs[kind] + '" alt=""><b style="color:#4ade80">✅ تم الرفع</b><small>اضغط للتغيير</small>';
+      $('kycErr3').textContent = '';
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function submitKyc() {
+  const err = $('kycErr3');
+  if (!kycDocs.front || !kycDocs.back) { err.textContent = 'ارفع صورتي وجه وظهر البطاقة.'; return; }
+  if (!kycDocs.selfie) { err.textContent = 'ارفع صورة سيلفي وأنت تحمل البطاقة.'; return; }
+  if (!$('kConsent').checked) { err.textContent = 'يجب الإقرار بصحة البيانات.'; return; }
+  err.textContent = '';
+  user.kyc = {
+    status: 'pending', name: $('kName').value.trim(), nid: $('kNid').value, dob: $('kDob').value,
+    gov: $('kGov').value.trim(), addr: $('kAddr').value.trim(), phone: user.phone,
+    docs: kycDocs, at: Date.now()
+  };
+  users[user.email] = user; saveUsers(); saveUser();
+  renderKyc(); applyUser();
+  toast('🚀 تم إرسال طلب التوثيق — قيد المراجعة', 'ok');
+  // في وضع التجربة يُعتمد تلقائيًا خلال 3 ثوانٍ
+  if (settings.autoConfirm) setTimeout(() => {
+    if (kycOf(user).status !== 'pending') return;
+    user.kyc.status = 'verified'; user.kyc.verifiedAt = Date.now();
+    users[user.email] = user; saveUsers(); saveUser(); applyUser();
+    if ($('screen-kyc').classList.contains('active')) renderKyc();
+    if ($('screen-dashboard').classList.contains('active')) renderDashboard();
+    toast('✅ تم توثيق حسابك بنجاح', 'ok');
+  }, 3000);
+}
+/* بوابة التوثيق قبل الإجراءات الحساسة */
+function requireKyc(action) {
+  if (isVerified(user)) return true;
+  const st = kycOf(user).status;
+  toast(st === 'pending' ? '⏳ حسابك قيد التوثيق — انتظر الاعتماد قبل ' + action : '🪪 يجب توثيق هويتك قبل ' + action, 'bad');
+  goKyc();
+  return false;
 }
 function logout() {
   user = null; saveUser(); currentCode = null;
@@ -937,7 +1513,7 @@ function logout() {
 }
 function applyUser() {
   if (!user) return;
-  $('topUserName').textContent = user.name;
+  $('topUserName').innerHTML = esc(user.name) + ' ' + vBadge(kycOf(user).status);
   $('topUserEmail').textContent = user.email;
   $('avatar').textContent = user.name.charAt(0).toUpperCase();
   $('dashName').textContent = user.name;
@@ -947,6 +1523,13 @@ function applyUser() {
 function renderDashboard() {
   applyUser();
   $('dashWalletWarn').hidden = !walletNotSet();
+  $('dashCloudWarn').hidden = cloudOn();
+  const k = kycOf(user);
+  $('dashKyc').innerHTML = k.status === 'verified'
+    ? `<div class="kyc-status kyc-ok" style="margin-bottom:18px"><span class="ic">✅</span><div><b>حسابك موثّق</b><span>يمكنك إنشاء الصفقات واستلام الأموال بثقة كاملة.</span></div></div>`
+    : k.status === 'pending'
+      ? `<div class="kyc-status kyc-pend" style="margin-bottom:18px"><span class="ic">⏳</span><div><b>التوثيق قيد المراجعة</b><span>سيتم اعتماد حسابك قريبًا.</span></div></div>`
+      : `<div class="kyc-status kyc-bad" style="margin-bottom:18px"><span class="ic">🪪</span><div><b>حسابك غير موثّق</b><span>التوثيق مطلوب لإنشاء صفقة أو دفع الضمان — يستغرق دقيقتين.</span></div><button class="btn btn-primary btn-sm" onclick="goKyc()">توثيق الهوية الآن</button></div>`;
   $('statTotal').textContent = deals.length;
   $('statActive').textContent = deals.filter(d => d.status !== 6 && d.status !== 7).length;
   $('statDone').textContent = deals.filter(d => d.status === 6).length;
@@ -990,12 +1573,14 @@ function createDeal(e) {
   const deal = {
     code: genCode(), product, desc, price, escrow, buyerAmount: price,
     buyer: buyer || '', seller: user.name, sellerEmail: user.email,
+    sellerVerified: isVerified(user), sellerPhone: (user.phone || '').slice(0, 4) + '****' + (user.phone || '').slice(-3),
+    buyerVerified: false,
     status: 0, prevStatus: null, dispute: null, payment: null, sellerPayment: null, createdAt: now,
     history: [{ status: 0, at: now }],
     chat: [{ id: now, by: 'system', text: '📝 تم إنشاء الصفقة بواسطة البائع ' + user.name, at: now }],
     lastRead: { seller: now }
   };
-  deals.push(deal); saveDeals();
+  deals.push(deal); saveDeals(false); cloudSave(deal);
   showCreated(deal);
   toast('✨ تم إنشاء الصفقة ' + deal.code, 'ok');
   return false;
@@ -1010,6 +1595,11 @@ function showCreated(d) {
     ${infoRow('مبلغ المشتري (100%)', money(d.buyerAmount))}
     ${d.buyer ? infoRow('المشتري', esc(d.buyer)) : ''}
     ${infoRow('حالة الصفقة', `<span class="badge ${STATUS[d.status].cls}">${STATUS[d.status].label}</span>`)}`;
+  $('createdCode2').textContent = d.code;
+  $('createdSync').innerHTML = autoOn()
+    ? '☁️ تمت مزامنة الصفقة تلقائيًا — أرسل الكود <b class="ltr" style="display:inline-block">' + d.code + '</b> للمشتري وسيجده من أي جهاز خلال ثوانٍ.'
+    : '📴 المزامنة مُعطّلة — استخدم زر «نسخ رابط الصفقة» لإرسالها لجهاز آخر.';
+  $('createdSync').className = autoOn() ? 'note ok' : 'note';
   $('createdOpenBtn').onclick = () => openDeal(d.code, 'seller');
   $('createdOpenBtn').innerHTML = '📲 ادفع ضمان البائع الآن عبر فودافون كاش';
   showScreen('created');
@@ -1023,13 +1613,21 @@ $('codeInput').addEventListener('input', e => {
   if (v.startsWith('WASIT') && !v.startsWith('WASIT-') && v.length > 5) v = 'WASIT-' + v.slice(5);
   e.target.value = v.slice(0, 12);
 });
-function lookupDeal(e) {
+async function lookupDeal(e) {
   e.preventDefault();
   const code = $('codeInput').value.trim().toUpperCase();
   const err = $('codeError');
   if (!/^WASIT-\d{6}$/.test(code)) { err.textContent = 'صيغة الكود غير صحيحة. مثال: WASIT-583921'; return false; }
-  const d = findDeal(code);
-  if (!d) { err.textContent = 'لم يتم العثور على صفقة بهذا الكود. تأكد من الكود مع البائع.'; return false; }
+  let d = findDeal(code);
+  if (!d && cloudOn()) {
+    err.innerHTML = '<span style="color:var(--muted)">⏳ جاري البحث عن الصفقة…</span>';
+    const remote = await cloudGet(code, true);
+    if (remote) { applyingRemote = true; mergeDeal(remote); applyingRemote = false; saveDeals(false); d = findDeal(code); }
+  }
+  if (!d) {
+    err.innerHTML = '❌ لم يتم العثور على صفقة بهذا الكود.<br><span style="color:var(--muted)">تأكد من الكود مع البائع، وأن البائع فتح الصفقة مرة واحدة على جهازه بعد إنشائها. أو اطلب منه إرسال <b>رابط الصفقة</b> من زر المشاركة.</span>';
+    return false;
+  }
   err.textContent = '';
   openDeal(code, 'buyer');
   return false;
@@ -1044,6 +1642,7 @@ function openDeal(code, role) {
     if (currentRole === 'buyer' && !d.buyerJoinedAt) {
       d.buyerJoinedAt = Date.now();
       if (!d.buyer && user) d.buyer = user.name;
+      if (user) d.buyerVerified = isVerified(user);
       sysMsg(d, '🛒 انضم المشتري ' + (user ? user.name : '') + ' إلى الصفقة — يمكن للطرفين التواصل الآن داخل الشات');
     }
     d.lastRead[currentRole] = Date.now();
@@ -1078,8 +1677,8 @@ function renderDeal() {
     ${infoRow('السعر', money(d.price), true)}
     ${infoRow('🎮 ضمان البائع (50%)', money(d.escrow))}
     ${infoRow('🛒 مبلغ المشتري (100%)', money(d.buyerAmount))}
-    ${infoRow('اسم البائع', '🎮 ' + esc(d.seller))}
-    ${infoRow('المشتري', d.buyer ? '🛒 ' + esc(d.buyer) : '<span style="color:var(--muted)">غير محدد</span>')}
+    ${infoRow('اسم البائع', '🎮 ' + esc(d.seller) + ' ' + vBadge(d.sellerVerified ? 'verified' : 'none'))}
+    ${infoRow('المشتري', d.buyer ? '🛒 ' + esc(d.buyer) + ' ' + vBadge(d.buyerVerified ? 'verified' : 'none') : '<span style="color:var(--muted)">غير محدد</span>')}
     ${infoRow('تاريخ الإنشاء', fmtDate(d.createdAt))}
     ${payRow(d.sellerPayment, 'دفعة البائع')}
     ${payRow(d.payment, 'دفعة المشتري')}
@@ -1162,8 +1761,9 @@ function renderActions(d) {
     }
     case 1:
       if (seller) {
-        html = `<div class="note ok">✅ تم تأكيد ضمانك (${money(d.escrow)}). الآن شارك كود الصفقة مع المشتري ليدفع المبلغ كاملًا.</div>
-          <div class="actions"><button class="btn btn-cyan" onclick="copyText('${d.code}')">📋 نسخ كود الصفقة</button></div>`;
+        html = `<div class="note ok">✅ تم تأكيد ضمانك (${money(d.escrow)}). الآن شارك الصفقة مع المشتري ليدفع المبلغ كاملًا.</div>
+          ${cloudOn() ? '' : '<div class="note info">🔗 المزامنة غير مفعّلة — أرسل <b>رابط الصفقة</b> (وليس الكود فقط) حتى تظهر عند المشتري على جهازه.</div>'}
+          <div class="actions"><button class="btn btn-success" onclick="waShare('${d.code}')">📲 إرسال عبر واتساب</button><button class="btn btn-cyan" onclick="shareDeal('${d.code}')">🔗 نسخ رابط الصفقة</button><button class="btn btn-ghost" onclick="copyText('${d.code}')">📋 نسخ الكود</button></div>`;
       } else if (admin) {
         html = `<div class="note">⏳ ضمان البائع مؤكد. بانتظار دفع المشتري للمبلغ الكامل (${money(d.buyerAmount)}).</div>`;
       } else {
@@ -1380,8 +1980,10 @@ let payKind = 'buyer'; // 'seller' = ضمان البائع 50% | 'buyer' = مب�
 function payAmount(d) { return payKind === 'seller' ? d.escrow : d.buyerAmount; }
 
 function openPayment(kind) {
+  if (!requireKyc('الدفع')) return;
   payKind = kind || 'buyer';
   const d = findDeal(currentCode);
+  if (payKind === 'buyer' && user) { d.buyerVerified = isVerified(user); if (!d.buyer) d.buyer = user.name; }
   const amount = payAmount(d);
   $('payTitle').textContent = payKind === 'seller' ? '🎮 دفع ضمان البائع (50%)' : '🛒 دفع مبلغ الصفقة كاملًا (100%)';
   $('payProduct').textContent = d.product;
@@ -1657,7 +2259,7 @@ function resolveDispute() {
 }
 
 /* ---------- Init ---------- */
-const APP_VERSION = 'v1.4';
+const APP_VERSION = 'v3.0 ⚡ مزامنة تلقائية';
 window.addEventListener('error', e => {
   try { console.error(e); toast('⚠️ خطأ (' + APP_VERSION + '): ' + (e.message || '') + ' @' + (e.lineno || '?'), 'bad'); } catch (_) {}
 });
@@ -1667,8 +2269,28 @@ window.addEventListener('unhandledrejection', e => { console.error(e.reason); })
   $('verTag').textContent = APP_VERSION;
   loadSettings();
   loadDeals();
+  loadUsers();
   loadUser();
-  if (user) { applyUser(); goDashboard(); } else { showScreen('splash'); }
+  if (user && user.email && users[user.email]) user = users[user.email];
+  updateCloudDot();
+  setInterval(cloudTick, 6000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) cloudTick(); });
+
+  // استقبال صفقة مشاركة عبر الرابط
+  const shared = importFromHash();
+  if (shared) {
+    mergeDeal(shared);
+    try { localStorage.setItem(LS_DEALS, JSON.stringify(deals)); } catch (e) {}
+    pendingShared = shared.code;
+  }
+  if (user) {
+    applyUser();
+    if (pendingShared) { toast('🔗 تم فتح الصفقة المشاركة ' + pendingShared, 'ok'); openDeal(pendingShared, 'buyer'); pendingShared = null; }
+    else goDashboard();
+  } else {
+    if (pendingShared) { setAuthTab('login'); showScreen('login'); toast('🔗 سجّل الدخول لعرض الصفقة ' + pendingShared, 'ok'); }
+    else showScreen('splash');
+  }
 })();
 </script>
 </body>
