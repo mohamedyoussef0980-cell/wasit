@@ -667,13 +667,13 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px;border-t
         <div class="actions"><button class="btn btn-ghost" onclick="gStep(3)">← السابق</button><button class="btn btn-primary" onclick="gNext(5)">التالي: الدفع →</button></div>
       </div>
       <div id="gs5" hidden>
-        <div class="card-title">5️⃣ الدفع وإثباته <span class="vf-badge"><i></i>Vodafone Cash</span></div>
-        <div class="note bad" id="gPayNote">⚠️ لا توجد بوابة دفع إلكترونية مفعّلة — الدفع يدوي: حوّل المبلغ ثم ارفع إثبات الدفع. <b>رفع الصورة لا يعني تأكيد الاستلام؛ تتحقق الإدارة أولًا.</b></div>
-        <div class="wallet-box"><div class="lbl">حوّل إلى محفظة WASEET</div><div class="num" id="gWallet">—</div><div class="lbl" id="gWalletName"></div><div class="amt" id="gTotal"></div>
-          <div style="display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-top:9px"><button class="btn btn-ghost btn-sm" onclick="copyText(APP.wallet)">📋 نسخ الرقم</button><a class="btn btn-danger btn-sm" href="tel:*9%23">📞 *9#</a></div></div>
+        <div class="card-title">5️⃣ الدفع اليدوي وإثباته</div>
+        <div class="note bad" id="gPayNote">⚠️ الدفع يدوي: حوّل <b id="gTotal"></b> على أي من الطريقتين ثم ارفع صورة الإيصال. <b>رفع الصورة لا يعني تأكيد الاستلام؛ تتحقق الإدارة أولًا.</b></div>
+        <div id="gPayMethods"></div>
+        <div class="field"><label>الطريقة التي حوّلت بها *</label><select id="gMethod"></select></div>
         <div id="gSummary" class="pay-summary"></div>
         <div class="row-2">
-          <div class="field"><label>رقم محفظتك التي حوّلت منها *</label><input type="tel" id="gSender" class="ltr" maxlength="11"></div>
+          <div class="field"><label>رقمك الذي حوّلت منه *</label><input type="tel" id="gSender" class="ltr" maxlength="11"></div>
           <div class="field"><label>رقم العملية *</label><input type="text" id="gRef" class="ltr" maxlength="30"></div>
         </div>
         <div class="field"><label>صورة إثبات الدفع (Screenshot) *</label><label class="up-box" id="gProofBox" style="min-height:110px"><input type="file" accept="image/*" onchange="gUpProof(this)"><span class="ic">📎</span><b>اضغط لرفع الصورة</b><small>JPG/PNG حتى 5MB</small></label></div>
@@ -743,7 +743,8 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px;border-t
         <button class="btn btn-primary" onclick="goAdmin(9)">🛡️ طلبات الضمان <span class="unread" id="owBadgeReq" hidden></span></button>
         <button class="btn" onclick="goAdmin(2)">🛒 صفقات البيع والشراء</button>
         <button class="btn" onclick="goAdmin(11)">📐 الرسوم والعمولات</button>
-        <button class="btn" onclick="goAdmin(2)">💳 المدفوعات <span class="unread" id="owBadgePay" hidden></span></button>
+        <button class="btn btn-cyan" onclick="goAdmin(16)">🧾 المعاملات (إيصالات للموافقة) <span class="unread" id="owBadgePay" hidden></span></button>
+        <button class="btn" onclick="goAdmin(15)">💳 طرق الدفع (انستا باي / فودافون)</button>
         <button class="btn" onclick="goAdmin(13)">🚩 الشكاوى والنزاعات</button>
         <button class="btn" onclick="goAdmin(1)">🪪 التوثيقات</button>
         <button class="btn" onclick="goAdmin(6)">💰 عمولات وصرف الوسطاء</button>
@@ -764,7 +765,16 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px;border-t
   <div class="container">
     <div class="page-head"><div><h1>👑 أقسام الإدارة</h1><p>Owner Dashboard › إدارة التطبيق</p></div><button class="btn btn-ghost btn-sm" onclick="goOwner()">← لوحة المالك</button></div>
     <div class="tabs"><button id="atb5" onclick="adminTab(5)">🛡️ Mediator Management</button><button id="atb12" onclick="adminTab(12)">👥 المستخدمون</button><button id="atb2" onclick="adminTab(2)">🛒 صفقات البيع والشراء + المدفوعات</button><button id="atb1" onclick="adminTab(1)">🪪 التوثيقات</button><button id="atb3" onclick="adminTab(3)">⚠️ نزاعات الصفقات</button><button id="atb6" onclick="adminTab(6)">💰 عمولات وصرف الوسطاء</button><button id="atb4" onclick="adminTab(4)">⚙️ إعدادات التطبيق</button><button id="atb8" onclick="adminTab(8)">🔐 حساب الإدارة</button><button id="atb7" onclick="adminTab(7)">📜 سجل العمليات</button></div>
-    <div class="tabs" style="border-color:rgba(34,211,238,.35)"><button id="atb9" onclick="adminTab(9)">🛡️ طلبات الضمان</button><button id="atb10" onclick="adminTab(10)">🧩 خدمات الضمان</button><button id="atb11" onclick="adminTab(11)">📐 الرسوم والعمولات</button><button id="atb13" onclick="adminTab(13)">🚩 الشكاوى والنزاعات</button><button id="atb14" onclick="adminTab(14)">🔔 الإشعارات</button></div>
+    <div class="tabs" style="border-color:rgba(34,211,238,.35)"><button id="atb9" onclick="adminTab(9)">🛡️ طلبات الضمان</button><button id="atb10" onclick="adminTab(10)">🧩 خدمات الضمان</button><button id="atb11" onclick="adminTab(11)">📐 الرسوم والعمولات</button><button id="atb13" onclick="adminTab(13)">🚩 الشكاوى والنزاعات</button><button id="atb14" onclick="adminTab(14)">🔔 الإشعارات</button><button id="atb15" onclick="adminTab(15)">💳 طرق الدفع</button><button id="atb16" onclick="adminTab(16)">🧾 المعاملات</button></div>
+    <div id="aPane15" class="card" hidden><div class="card-title">💳 طرق الدفع اليدوي</div>
+      <div class="card-sub">هذه الأرقام تظهر للمشتري/البائع في صفحة الدفع. عدّل الرقم أو التعليمات وفعّل/عطّل كل طريقة — يُحفظ في Firestore (paymentMethods).</div>
+      <div id="pmList"><div class="empty">—</div></div></div>
+    <div id="aPane16" hidden>
+      <div class="money-grid" id="txStats"></div>
+      <div class="card"><div class="card-title">🧾 الإيصالات بانتظار الموافقة
+        <select id="txFilter" onchange="loadTransactions()" style="background:#0a0f1d;border:1px solid var(--border);color:var(--text);border-radius:10px;padding:6px 10px;font:inherit;font-size:12px"><option value="pending">بانتظار التحقق</option><option value="confirmed">مؤكدة</option><option value="failed">مرفوضة</option><option value="all">الكل</option></select></div>
+        <div class="note info" style="font-size:12px">⚠️ تأكد فعليًا من وصول المبلغ على حسابك (انستا باي / فودافون كاش) بمطابقة رقم العملية والمبلغ قبل الضغط على «تأكيد».</div>
+        <div id="txList"><div class="empty">—</div></div></div></div>
     <div id="aPane14" class="card" hidden><div class="card-title">🔔 إدارة الإشعارات</div>
       <div class="card-sub">أرسل إشعارًا داخل التطبيق لفئة من الحسابات. (لا يُرسل بريدًا أو SMS — يحتاج خدمة خارجية.)</div>
       <div class="row-2"><div class="field"><label>إلى</label><select id="nbTo"><option value="users">كل المستخدمين العاديين</option><option value="mediators">كل الوسطاء</option><option value="all">الجميع</option></select></div><div class="field"><label>نص الإشعار *</label><input type="text" id="nbText" maxlength="160"></div></div>
@@ -873,20 +883,12 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px;border-t
     <div style="display:flex;justify-content:space-between;margin-top:5px"><span>سعر الصفقة</span><span id="pPrice"></span></div>
     <div class="total"><span id="pLabel">المطلوب</span><span id="pAmt"></span></div>
   </div>
-  <div class="wallet-box">
-    <div class="lbl">حوّل المبلغ إلى محفظة وسيط</div>
-    <div class="num" id="pWallet">—</div><div class="lbl" id="pWalletName"></div>
-    <div class="amt" id="pAmt2"></div>
-    <div style="display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-top:9px">
-      <button class="btn btn-ghost btn-sm" onclick="copyText(APP.wallet)">📋 نسخ الرقم</button>
-      <a class="btn btn-danger btn-sm" href="tel:*9%23">📞 فتح *9#</a>
-    </div>
-  </div>
+  <div id="pPayMethods"></div>
+  <div class="field"><label>الطريقة التي حوّلت بها *</label><select id="pMethod"></select></div>
   <div class="steps-mini">
-    <div>اطلب <b class="ltr">*9#</b> ← تحويل أموال ← رقم محفظة وسيط ← المبلغ ← الرقم السري. (أو تطبيق أنا فودافون)</div>
-    <div>حوّل المبلغ بالضبط.</div>
-    <div>اكتب رقم العملية من رسالة SMS وارفع صورتها.</div>
-    <div>تراجع الإدارة التحويل وتفعّل الصفقة خلال دقائق.</div>
+    <div>حوّل المبلغ بالضبط على أحد الرقمين أعلاه (انستا باي أو فودافون كاش).</div>
+    <div>اكتب رقم العملية من رسالة التأكيد وارفع صورة الإيصال.</div>
+    <div>تراجع الإدارة التحويل وتفعّل الصفقة بعد التحقق الفعلي.</div>
   </div>
   <div class="row-2">
     <div class="field"><label>رقم محفظتك *</label><input type="tel" id="pSender" class="ltr" maxlength="11" placeholder="01012345678"></div>
@@ -935,6 +937,14 @@ const APP_VERSION='v6.1 👑 WASEET';
 const LS_CFG='wasit_fb_cfg';
 /* 🔐 الدخول السري للإدارة: لا يظهر إلا عبر الرابط  #wasit-owner-2026 */
 const OWNER_HASH='#wasit-owner-2026';
+/* بريد المالك المعتمد للدخول الموحّد (يدخل Owner Dashboard مباشرة) */
+const OWNER_EMAILS=['mohamed.youssef0980@gmail.com'];
+/* طرق الدفع اليدوي الافتراضية — تُنشأ في Firestore (paymentMethods) إن لم توجد */
+const DEFAULT_PAYMENT_METHODS={
+  doc1:{type:'instapay',name:'انستا باي',account:'01210410606',instructions:'حول المبلغ على رقم انستا باي ده وابعت سكرين شوت التحويل مع كتابة اسمك في الملاحظات',active:true,order:1},
+  doc2:{type:'vodafone_cash',name:'فودافون كاش',account:'01558399338',instructions:'حول على رقم فودافون كاش ده من انا فودافون وارفع صورة تأكيد التحويل',active:true,order:2}
+};
+let PAY_METHODS=[];
 const SDK='https://www.gstatic.com/firebasejs/10.12.5/';
 let FB={}, auth=null, db=null, me=null, myDoc=null, isAdmin=false;
 let API=null, BACKEND=false; // Cloud Functions client + حالة توفر الخادم
@@ -970,6 +980,8 @@ service cloud.firestore {
     match /ownerAuth/{u} { allow read, write: if false; }
     match /rateLimits/{k} { allow read, write: if false; }
     match /config/{d} { allow read: if true; allow write: if admin(); }
+    // طرق الدفع اليدوي (انستا باي / فودافون كاش): قراءة للجميع، تعديل للمالك فقط
+    match /paymentMethods/{id} { allow read: if true; allow write: if admin(); }
     // أسماء المستخدمين الفريدة — تُنشأ مرة واحدة ولا تُعدَّل
     match /usernames/{u} {
       allow get: if true;
@@ -1339,6 +1351,27 @@ async function boot(){
     loadAppConfig();
   }catch(e){console.error(e);$('boot').innerHTML='<div class="card" style="max-width:460px"><b>تعذر الاتصال بالخادم</b><p style="color:var(--muted);font-size:13px;margin:10px 0">تحقق من اتصال الإنترنت ثم أعد المحاولة.</p><button class="btn btn-primary" onclick="location.reload()">إعادة المحاولة</button></div>';}
 }
+async function ensurePaymentMethods(){
+  try{const s=await FB.getDocs(FB.collection(db,'paymentMethods'));
+    if(s.empty){for(const [id,d] of Object.entries(DEFAULT_PAYMENT_METHODS))await FB.setDoc(FB.doc(db,'paymentMethods',id),{...d,updatedAt:Date.now()});}
+  }catch(e){console.warn('paymentMethods seed',e);}
+}
+async function loadPaymentMethods(){
+  try{const s=await FB.getDocs(FB.collection(db,'paymentMethods'));PAY_METHODS=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));}
+  catch(e){PAY_METHODS=[];}
+  if(!PAY_METHODS.length)PAY_METHODS=Object.entries(DEFAULT_PAYMENT_METHODS).map(([id,d])=>({id,...d})); // احتياط للعرض فقط
+  return PAY_METHODS;
+}
+const PM_ICON=t=>t==='instapay'?'🏦':t==='vodafone_cash'?'<span class="vf-badge"><i></i>Cash</span>':'💳';
+function payMethodsCards(amount){
+  const act=PAY_METHODS.filter(m=>m.active!==false);
+  if(!act.length)return '<div class="note bad">⚠️ لا توجد طرق دفع مفعّلة حاليًا — تواصل مع الإدارة.</div>';
+  return '<div class="grid grid-2" style="gap:10px;margin-bottom:12px">'+act.map(m=>`<div class="wallet-box" style="margin:0;${m.type==='instapay'?'background:linear-gradient(135deg,rgba(124,58,237,.18),rgba(124,58,237,.05));border-color:rgba(168,85,247,.5)':''}">
+    <div class="lbl">${PM_ICON(m.type)} ${esc(m.name)}</div><div class="num" style="font-size:22px">${esc(m.account)}</div>
+    <div class="lbl" style="margin:6px 0;color:var(--text);font-size:11px;line-height:1.6">${esc(m.instructions||'')}</div>
+    ${amount!=null?`<div class="amt">${money(amount)}</div>`:''}
+    <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:8px"><button class="btn btn-ghost btn-sm" onclick="copyText('${esc(m.account)}')">📋 نسخ الرقم</button>${m.type==='vodafone_cash'?'<a class="btn btn-danger btn-sm" href="tel:*9%23">📞 *9#</a>':''}</div></div>`).join('')+'</div>';
+}
 async function loadAppConfig(){
   try{const s=await FB.getDoc(FB.doc(db,'config','app'));if(s.exists())APP={...APP,...s.data()};}catch(e){}
 }
@@ -1356,6 +1389,9 @@ async function onAuth(u){
   if(!s.exists()){await FB.setDoc(ref,{name:u.displayName||u.email.split('@')[0],email:u.email,phone:'',kycStatus:'none',role:'user',createdAt:FB.serverTimestamp()});s=await FB.getDoc(ref);}
   myDoc=s.data();
   const ad=await FB.getDoc(FB.doc(db,'admins',u.uid));isAdmin=ad.exists();
+  // الدخول الموحّد: بريد المالك المعتمد يدخل Owner مباشرة (يُثبَّت في admins ليعمل مع قواعد الخادم)
+  if(!isAdmin&&OWNER_EMAILS.includes((u.email||'').toLowerCase())){try{await FB.setDoc(FB.doc(db,'admins',u.uid),{email:u.email,label:'owner',at:FB.serverTimestamp()});isAdmin=true;}catch(e){console.warn('admins write blocked by rules — أضف الوثيقة من Firebase Console',e);}}
+  if(isAdmin)await ensurePaymentMethods();
   // 🔒 لا يوجد أي مسار من المتصفح لإنشاء مسؤول. المسؤولون يُضافون فقط من Firebase Console (مجموعة admins) أو عبر ownerSetup على الخادم.
   $('adminBtn').hidden=!isAdmin;
   $('brokerBtn').hidden=!myBroker;
@@ -1705,15 +1741,17 @@ function waShare(){const d=curDeal;const t=`🤝 *صفقة وسيط*\n${d.produc
   window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank');}
 
 /* ---------- payments ---------- */
-function openPay(kind){
+async function openPay(kind){
   if(!needKyc('الدفع'))return;
-  if(!APP.wallet)return toast('⚠️ لم تضبط الإدارة محفظة الاستقبال بعد','bad');
+  await loadPaymentMethods();
+  if(!PAY_METHODS.some(m=>m.active!==false))return toast('⚠️ لا توجد طرق دفع مفعّلة حاليًا','bad');
   payKind=kind;const d=curDeal,amt=kind==='seller'?d.escrow:d.buyerAmount;
-  $('payTitle').innerHTML=(kind==='seller'?'🎮 دفع ضمان البائع (50%)':'🛒 دفع مبلغ الصفقة (100%)')+' <span class="vf-badge"><i></i>Vodafone Cash</span>';
+  $('payTitle').innerHTML=(kind==='seller'?'🎮 دفع ضمان البائع (50%)':'🛒 دفع مبلغ الصفقة (100%)')+' · دفع يدوي';
   $('pProd').textContent=d.product;$('pPrice').textContent=money(d.price);
   $('pLabel').textContent=kind==='seller'?'ضمان البائع':'مبلغ المشتري';
-  $('pAmt').textContent=money(amt);$('pAmt2').textContent=money(amt);
-  $('pWallet').textContent=APP.wallet;$('pWalletName').textContent=APP.walletName||'';
+  $('pAmt').textContent=money(amt);
+  $('pPayMethods').innerHTML=payMethodsCards(amt);
+  $('pMethod').innerHTML=PAY_METHODS.filter(m=>m.active!==false).map(m=>`<option value="${m.id}">${esc(m.name)} — ${esc(m.account)}</option>`).join('');
   $('pSender').value=myDoc.phone||'';$('pRef').value='';$('pErr').textContent='';receiptData=null;
   $('pRecBox').classList.remove('done');$('pRecBox').innerHTML='<input type="file" accept="image/*" onchange="upReceipt(this)"><span class="ic">📎</span><b>اضغط لرفع صورة الإيصال</b>';
   openModal('payModal');}
@@ -1722,12 +1760,13 @@ async function upReceipt(inp){try{receiptData=await shrink(inp.files[0],750,.6);
 async function submitPayment(){
   const d=curDeal,err=$('pErr'),sender=normPhone($('pSender').value),ref=normD($('pRef').value);
   if(!isPhone(sender))return err.textContent='رقم محفظتك غير صحيح (01xxxxxxxxx)';
-  if(ref.length<4)return err.textContent='أدخل رقم العملية من رسالة فودافون كاش';
+  if(ref.length<4)return err.textContent='أدخل رقم العملية من رسالة التأكيد';
   if(!receiptData)return err.textContent='ارفع صورة الإيصال';
+  const pm=PAY_METHODS.find(m=>m.id===$('pMethod').value&&m.active!==false);if(!pm)return err.textContent='اختر طريقة الدفع';
   err.textContent='';busy('pBtn',true,'جاري الإرسال…');
   try{
     const amt=payKind==='seller'?d.escrow:d.buyerAmount;
-    const p={method:'vfcash',sender,ref,receipt:receiptData,amount:amt,toWallet:APP.wallet,byUid:me.uid,at:Date.now(),rejected:false,verifiedAt:null};
+    const p={method:pm.type,methodName:pm.name,sender,ref,receipt:receiptData,amount:amt,toWallet:pm.account,byUid:me.uid,at:Date.now(),rejected:false,verifiedAt:null};
     const st=payKind==='seller'?9:8;
     const up={status:st,history:FB.arrayUnion({s:st,at:Date.now()}),updatedAt:FB.serverTimestamp()};
     up[payKind==='seller'?'sellerPayment':'payment']=p;
@@ -1796,11 +1835,65 @@ async function sendImage(inp){try{const img=await shrink(inp.files[0],620,.55);i
 
 /* ---------- admin ---------- */
 function goAdmin(tab){if(!isAdmin)return goHome();showScreen('admin');adminTab(tab||9);$('wNum').value=APP.wallet||'';$('wName').value=APP.walletName||'';}
-function adminTab(n){if(!isAdmin)return goHome();[1,2,3,4,5,6,7,8,9,10,11,12,13,14].forEach(i=>{$('atb'+i).classList.toggle('on',i===n);$('aPane'+i).hidden=i!==n;});
+function adminTab(n){if(!isAdmin)return goHome();[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16].forEach(i=>{$('atb'+i).classList.toggle('on',i===n);$('aPane'+i).hidden=i!==n;});
+  if(n===15)loadPmAdmin();if(n===16)loadTransactions();
   if(n===1)loadAdminKyc();if(n===2)loadAdminPays();if(n===3)loadAdminDisputes();
   if(n===5){loadInvites();loadBrokers();}if(n===6)loadAdminCommissions();if(n===7)loadAuditLogs();if(n===8)loadAdminCreds();
   if(n===9)loadAdminRequests();if(n===10){clearServiceForm();loadAdminServices();}if(n===11)loadFeeForm();if(n===12)loadUsers();if(n===13)loadComplaints();
   if(n===14){$('aNotifList').innerHTML=_notifs.length?_notifs.map(x=>`<div class="notif ${x.read?'':'un'}" onclick="openNotif('${x.id}')">${esc(x.text)}<small>${fmt(x.at)}</small></div>`).join(''):'<div class="empty">لا توجد إشعارات</div>';}}
+/* ===== طرق الدفع (Owner) ===== */
+async function loadPmAdmin(){await ensurePaymentMethods();await loadPaymentMethods();
+  $('pmList').innerHTML=PAY_METHODS.map(m=>`<div class="svc-form" id="pm_${m.id}">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px"><b style="font-size:14px">${PM_ICON(m.type)} ${esc(m.name)} <span class="chip">${esc(m.type)}</span></b>
+      <span class="cm ${m.active!==false?'cm-paid':'cm-reversed'}">${m.active!==false?'مفعّلة — تظهر للمشتري':'معطّلة'}</span></div>
+    <div class="row-2"><div class="field"><label>اسم الطريقة</label><input type="text" id="pmName_${m.id}" value="${esc(m.name)}" maxlength="40"></div>
+      <div class="field"><label>رقم الحساب / المحفظة</label><input type="tel" id="pmAcc_${m.id}" class="ltr" value="${esc(m.account)}" maxlength="20"></div></div>
+    <div class="field"><label>التعليمات التي تظهر للمشتري</label><textarea id="pmIns_${m.id}" maxlength="300">${esc(m.instructions||'')}</textarea></div>
+    <div class="error" id="pmErr_${m.id}"></div>
+    <div class="actions"><button class="btn btn-primary btn-sm" onclick="savePm('${m.id}')">💾 حفظ</button><button class="btn btn-sm ${m.active!==false?'btn-danger':'btn-success'}" onclick="togglePm('${m.id}',${m.active===false})">${m.active!==false?'⏸️ تعطيل':'▶️ تفعيل'}</button></div></div>`).join('');}
+async function savePm(id){const e=$('pmErr_'+id),name=$('pmName_'+id).value.trim(),acc=normPhone($('pmAcc_'+id).value),ins=$('pmIns_'+id).value.trim();
+  if(name.length<2)return e.textContent='أدخل اسم الطريقة';if(!isPhone(acc))return e.textContent='رقم غير صحيح (11 رقمًا يبدأ بـ 01)';e.textContent='';
+  try{await FB.updateDoc(FB.doc(db,'paymentMethods',id),{name,account:acc,instructions:ins,updatedAt:Date.now()});await audit('payment_method_update','paymentMethods/'+id,name+' · '+acc);toast('💾 تم حفظ طريقة الدفع','ok');loadPmAdmin();}catch(ex){e.textContent='فشل: '+ex.message;}}
+async function togglePm(id,on){try{await FB.updateDoc(FB.doc(db,'paymentMethods',id),{active:on,updatedAt:Date.now()});await audit(on?'payment_method_on':'payment_method_off','paymentMethods/'+id,'');toast(on?'▶️ تم التفعيل':'⏸️ تم التعطيل',on?'ok':'bad');loadPmAdmin();}catch(e){toast('فشل: '+e.message,'bad');}}
+
+/* ===== المعاملات: كل إيصالات الدفع (طلبات الضمان + الصفقات) للموافقة ===== */
+async function loadTransactions(){
+  const el=$('txList'),f=$('txFilter').value;el.innerHTML='<div class="empty">جاري التحميل…</div>';
+  try{
+    const [rq,dl]=await Promise.all([FB.getDocs(FB.collection(db,'requests')),FB.getDocs(FB.collection(db,'deals'))]);
+    const tx=[];
+    rq.docs.forEach(d=>{const r={id:d.id,...d.data()};if(!r.payment)return;const ps=r.paymentStatus;
+      tx.push({kind:'req',id:r.id,title:'🛡️ طلب ضمان · '+(r.serviceSnapshot||{}).name,who:r.buyerName,p:r.payment,amount:r.payment.amountDue,at:r.payment.uploadedAt,state:['proof_uploaded','pending_verification'].includes(ps)?'pending':ps==='confirmed'?'confirmed':ps==='failed'?'failed':'other',label:PS[ps]||ps,open:()=>openRequest(r.id,'admin')});});
+    dl.docs.forEach(d=>{const x=d.data();[['sellerPayment','🎮 ضمان البائع'],['payment','🛒 دفعة المشتري']].forEach(([k,lbl])=>{const p=x[k];if(!p)return;
+      const state=p.verifiedAt?'confirmed':p.rejected?'failed':'pending';
+      tx.push({kind:'deal',id:x.code,title:lbl+' · '+x.product,who:k==='sellerPayment'?x.sellerName:(x.buyerName||''),p,amount:p.amount,at:p.at,state,label:state==='confirmed'?'مؤكدة':state==='failed'?'مرفوضة':'بانتظار التحقق',dealKind:k==='sellerPayment'?'seller':'buyer',open:()=>openDeal(x.code)});});});
+    const c=s=>tx.filter(t=>t.state===s);
+    $('txStats').innerHTML=[['بانتظار التحقق',c('pending').length,'gold'],['مؤكدة',c('confirmed').length,'green'],['مرفوضة',c('failed').length,''],['إجمالي مؤكد الاستلام',money(c('confirmed').reduce((a,t)=>a+(t.amount||0),0)),'green'],['انستا باي (مؤكد)',money(c('confirmed').filter(t=>t.p.method==='instapay').reduce((a,t)=>a+(t.amount||0),0)),''],['فودافون كاش (مؤكد)',money(c('confirmed').filter(t=>t.p.method!=='instapay').reduce((a,t)=>a+(t.amount||0),0)),'']].map(([k,v,cls])=>`<div class="money-box ${cls}"><b style="font-size:15px">${v}</b><span>${k}</span></div>`).join('');
+    const list=(f==='all'?tx:tx.filter(t=>t.state===f)).sort((a,b)=>(b.at||0)-(a.at||0));window._tx=list;
+    el.innerHTML=list.length?list.map((t,i)=>`<div class="receipt-card" style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center"><b>${esc(t.title)}</b><span class="ltr">${t.id}</span><span class="cm ${t.state==='confirmed'?'cm-paid':t.state==='failed'?'cm-reversed':'cm-pending'}">${esc(t.label)}</span></div>
+      <div style="color:var(--muted);margin:6px 0;display:flex;gap:10px;flex-wrap:wrap"><span>👤 ${esc(t.who||'')}</span><span>${PM_ICON(t.p.method)} ${esc(t.p.methodName||(t.p.method==='instapay'?'انستا باي':'فودافون كاش'))}</span><span>إلى <b class="ltr" style="display:inline-block">${esc(t.p.toWallet||'')}</b></span><span>من <b class="ltr" style="display:inline-block">${esc(t.p.sender||'')}</b></span><span>عملية <b class="ltr" style="display:inline-block">${esc(t.p.ref||'')}</b></span><span>💰 <b style="color:var(--cyan)">${money(t.amount)}</b></span><span>${fmt(t.at)}</span></div>
+      ${(t.p.proof||t.p.receipt)?`<img src="${t.p.proof||t.p.receipt}" style="max-height:220px" onclick="viewImg(this.src)">`:'<div class="note bad" style="font-size:11px">لا توجد صورة إيصال</div>'}
+      <div class="actions">${t.state==='pending'?`<button class="btn btn-success btn-sm" onclick="txApprove(${i})">✅ تأكيد وصول المبلغ</button><button class="btn btn-danger btn-sm" onclick="txReject(${i})">❌ رفض</button>`:''}<button class="btn btn-ghost btn-sm" onclick="_tx[${i}].open()">📄 فتح</button></div></div>`).join('')
+      :'<div class="empty"><span class="ic">🧾</span>لا توجد معاملات في هذا التصنيف</div>';
+  }catch(e){el.innerHTML='<div class="empty">خطأ: '+esc(e.message)+'</div>';}
+}
+async function txApprove(i){const t=_tx[i];if(!confirm('هل تأكدت فعليًا من وصول '+money(t.amount)+' على '+(t.p.methodName||'')+' '+(t.p.toWallet||'')+' بعملية '+(t.p.ref||'')+'؟'))return;
+  try{
+    if(t.kind==='deal'){await approvePay(t.dealKind,t.id);}
+    else{const r=(await FB.getDoc(FB.doc(db,'requests',t.id))).data();
+      await FB.updateDoc(FB.doc(db,'requests',t.id),{paymentStatus:'confirmed','payment.amountConfirmed':r.payment.amountDue,'payment.confirmedAt':Date.now(),updatedAt:FB.serverTimestamp(),log:FB.arrayUnion({a:'pay_confirmed',t:'حالة الدفع → تم تأكيد الدفع ('+(r.payment.methodName||'')+')',at:Date.now(),byUid:me.uid,byName:myDoc.name,role:'admin'})});
+      await FB.setDoc(FB.doc(db,'ledger',t.id),{requestId:t.id,buyerUid:r.buyerUid,mediatorUid:r.mediatorUid,basis:r.fees.basis,appCommission:r.fees.appCommission,mediatorFee:r.fees.mediatorFee,totalFees:r.fees.totalFees,amountDue:r.payment.amountDue,amountReceived:r.payment.amountDue,method:r.payment.method,toWallet:r.payment.toWallet,ref:r.payment.ref,paymentStatus:'confirmed',confirmedAt:Date.now(),byUid:me.uid},{merge:true});
+      await rSys(t.id,'💳 الإدارة: تم تأكيد الدفع');await notify(r.buyerUid,'✅ تم تأكيد دفع طلبك '+t.id,'req:'+t.id);await audit('req_pay_confirmed','req:'+t.id,t.p.ref||'');}
+    toast('✅ تم تأكيد المعاملة','ok');loadTransactions();
+  }catch(e){toast('فشل: '+e.message,'bad');}}
+async function txReject(i){const t=_tx[i];const why=prompt('سبب الرفض:','لم يصل المبلغ / رقم العملية غير مطابق');if(!why)return;
+  try{
+    if(t.kind==='deal'){const s=await FB.getDoc(FB.doc(db,'deals',t.id));const d=s.data();const f=t.dealKind==='seller'?'sellerPayment':'payment';const up={status:t.dealKind==='seller'?0:1,updatedAt:FB.serverTimestamp()};up[f]={...d[f],rejected:true,rejectReason:why};await FB.updateDoc(FB.doc(db,'deals',t.id),up);await sysMsg(t.id,'❌ رفضت الإدارة الإيصال: '+why);}
+    else{const r=(await FB.getDoc(FB.doc(db,'requests',t.id))).data();await FB.updateDoc(FB.doc(db,'requests',t.id),{paymentStatus:'failed','payment.failReason':why,updatedAt:FB.serverTimestamp(),log:FB.arrayUnion({a:'pay_failed',t:'حالة الدفع → فشل ('+why+')',at:Date.now(),byUid:me.uid,byName:myDoc.name,role:'admin'})});await rSys(t.id,'💳 الإدارة: لم يتم التحقق من الدفع — '+why);await notify(r.buyerUid,'❌ لم يتم التحقق من دفع طلبك '+t.id+': '+why,'req:'+t.id);}
+    await audit('tx_rejected',t.kind+':'+t.id,why);toast('تم الرفض','bad');loadTransactions();
+  }catch(e){toast('فشل: '+e.message,'bad');}}
+
 async function broadcastNotif(){const t=$('nbText').value.trim(),to=$('nbTo').value,e=$('nbErr');if(t.length<3)return e.textContent='اكتب نص الإشعار';e.textContent='';busy('nbBtn',true);
   try{const us=await FB.getDocs(FB.collection(db,'users'));const bs=await FB.getDocs(FB.collection(db,'brokers'));const medIds=new Set(bs.docs.map(d=>d.id));let n=0;
     for(const d of us.docs){const isMed=medIds.has(d.id);if(to==='all'||(to==='users'&&!isMed)||(to==='mediators'&&isMed)){await notify(d.id,'📣 '+t,null);n++;}}
@@ -2503,7 +2596,9 @@ async function gNext(n){
       <tr><td>إجمالي الرسوم</td><td>${money(f.totalFees)}</td></tr>
       <tr class="tot"><td>${f.payer==='buyer'?'الإجمالي المطلوب دفعه':'المبلغ المطلوب دفعه (الرسوم فقط)'}</td><td>${money(f.payer==='buyer'?f.totalFees:f.totalFees)}</td></tr></table>
       <div class="hint" style="color:var(--muted);font-size:11px;margin-top:8px">💡 المبلغ المطلوب تحويله للمنصة هو <b>إجمالي الرسوم</b> فقط — سعر الحساب دفعته للبائع مسبقًا خارج التطبيق. تُثبَّت هذه النسب داخل الطلب ولن تتغير لاحقًا. يُعاد التحقق منها في الخادم.</div>`;gStep(4);}
-  if(n===5){await loadAppConfig();$('gWallet').textContent=APP.wallet||'لم تضبط الإدارة المحفظة بعد';$('gWalletName').textContent=APP.walletName||'';$('gTotal').textContent=money(G.fees.totalFees);
+  if(n===5){await loadAppConfig();await loadPaymentMethods();$('gTotal').textContent=money(G.fees.totalFees);
+    $('gPayMethods').innerHTML=payMethodsCards(G.fees.totalFees);
+    $('gMethod').innerHTML=PAY_METHODS.filter(m=>m.active!==false).map(m=>`<option value="${m.id}">${esc(m.name)} — ${esc(m.account)}</option>`).join('')||'<option value="">لا توجد طرق مفعّلة</option>';
     $('gSummary').innerHTML=`<div style="display:flex;justify-content:space-between"><span>الخدمة</span><b>${esc(G.service.name)}</b></div><div style="display:flex;justify-content:space-between;margin-top:4px"><span>الوسيط</span><b>${G.mediator?esc(G.mediator.name)+' ('+G.fees.medPct+'%)':'—'}</b></div><div class="total"><span>المطلوب تحويله</span><span>${money(G.fees.totalFees)}</span></div>`;gStep(5);}
 }
 function gPickSvc(id){G.service=SERVICES.find(s=>s.id===id);G.mediator=null;document.querySelectorAll('.svc').forEach(e=>e.classList.remove('sel'));event.currentTarget.classList.add('sel');}
@@ -2512,7 +2607,8 @@ function viewMediator(uid){const b=(G._meds||[]).find(x=>x.uid===uid);if(!b)retu
 async function gUpProof(inp){try{const f=inp.files[0];if(f&&f.size>5*1024*1024)throw'الحجم أكبر من 5MB';G.proof=await shrink(f,900,.65);$('gProofBox').classList.add('done');$('gProofBox').innerHTML='<input type="file" accept="image/*" onchange="gUpProof(this)"><img src="'+G.proof+'" style="max-height:110px"><b style="color:#4ade80">✅ تم — اضغط للاستبدال</b>';}catch(e){$('gErr5').textContent=e;}}
 async function submitGuarantee(){
   const e=$('gErr5'),sender=normPhone($('gSender').value),ref=normD($('gRef').value);
-  if(!APP.wallet)return e.textContent='الدفع غير متاح حاليًا: لم تضبط الإدارة محفظة الاستقبال';
+  const pm=PAY_METHODS.find(m=>m.id===$('gMethod').value&&m.active!==false);
+  if(!pm)return e.textContent='اختر طريقة الدفع التي حوّلت بها';
   if(!isPhone(sender))return e.textContent='رقم محفظتك غير صحيح';if(ref.length<4)return e.textContent='أدخل رقم العملية';
   if(!G.proof)return e.textContent='ارفع صورة إثبات الدفع';if(!$('gTerms').checked)return e.textContent='يجب الموافقة على الشروط';
   e.textContent='';busy('gSubmit',true,'جاري الإرسال…');
@@ -2529,7 +2625,7 @@ async function submitGuarantee(){
       serviceId:G.service.id,serviceSnapshot:{name:G.service.name,kind:G.service.kind,basis:G.service.basis,price:G.service.price||0,includes:G.service.includes||'',excludes:G.service.excludes||'',duration:G.service.duration||''},
       mediatorUid:medSnap?medSnap.uid:null,mediatorSnapshot:medSnap,mediatorDecision:null,
       fees:G.fees,status:'awaiting_admin_review',paymentStatus:'proof_uploaded',
-      payment:{method:'vfcash',sender,ref,proof:G.proof,toWallet:APP.wallet,amountDue:G.fees.totalFees,amountConfirmed:0,confirmedAt:null,uploadedAt:Date.now()},
+      payment:{method:pm.type,methodName:pm.name,sender,ref,proof:G.proof,toWallet:pm.account,amountDue:G.fees.totalFees,amountConfirmed:0,confirmedAt:null,uploadedAt:Date.now()},
       log:[{a:'created',t:'أنشأ المشتري الطلب ورفع إثبات الدفع',at:Date.now(),byUid:me.uid,byName:myDoc.name,role:'user'}],
       createdAt:FB.serverTimestamp(),updatedAt:FB.serverTimestamp()};
     await FB.setDoc(FB.doc(db,'requests',id),req);
