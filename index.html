@@ -283,31 +283,6 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px;border-t
 
 <main>
 <!-- SETUP -->
-<section class="screen" id="screen-setup">
-  <div class="center-wrap"><div class="card" style="max-width:640px;width:100%">
-    <div class="card-title">⚙️ ربط التطبيق بقاعدة بياناتك (مرة واحدة)</div>
-    <div class="card-sub">وسيط يعمل على Firebase المجاني: حسابات حقيقية + قاعدة بيانات سحابية + شات لحظي.</div>
-    <ol style="font-size:13px;color:var(--muted);padding-right:18px;line-height:2;margin-bottom:14px">
-      <li>افتح <b class="ltr">console.firebase.google.com</b> ← <b>Add project</b>.</li>
-      <li>من <b>Build → Authentication → Get started</b> فعّل <b>Email/Password</b>.</li>
-      <li>من <b>Build → Firestore Database → Create</b> اختر <b>Start in test mode</b>.</li>
-      <li>من <b>Project settings ⚙️ → Your apps → Web &lt;/&gt;</b> أنشئ تطبيق ويب وانسخ كائن <b class="ltr">firebaseConfig</b>.</li>
-      <li>الصق الكائن كاملًا بالأسفل واضغط ربط.</li>
-    </ol>
-    <div class="field"><label>الصق firebaseConfig هنا</label>
-      <textarea id="cfgInput" class="ltr" style="min-height:150px;font-family:Consolas,monospace;font-size:12px" placeholder='{ "apiKey": "AIza...", "authDomain": "x.firebaseapp.com", "projectId": "x", "storageBucket": "x.appspot.com", "messagingSenderId": "123", "appId": "1:123:web:abc" }'></textarea></div>
-    <div class="error" id="cfgErr"></div>
-    <button class="btn btn-primary btn-block btn-lg" onclick="saveConfig()">🔌 ربط وتشغيل التطبيق</button>
-    <div style="text-align:center;color:var(--muted);font-size:12px;margin:14px 0 8px">— أو —</div>
-    <button class="btn btn-cyan btn-block btn-lg" onclick="startDemo()">🧪 تشغيل النسخة التجريبية فورًا (بدون أي إعدادات)</button>
-    <div class="note info" style="font-size:12px">الوضع التجريبي يعمل بالكامل على هذا الجهاز ببيانات جاهزة: حساب مسؤول، وسيط معتمد، بائع، مشتري، وصفقات بحالات مختلفة. مثالي للعرض والاختبار.</div>
-    <details style="margin-top:14px"><summary style="cursor:pointer;color:var(--cyan);font-size:13px;font-weight:700">🔐 قواعد الأمان (الصقها في Firestore → Rules)</summary>
-      <pre class="code" id="rulesTxt"></pre>
-      <button class="btn btn-ghost btn-sm" onclick="copyText(document.getElementById('rulesTxt').textContent)">📋 نسخ القواعد</button>
-    </details>
-  </div></div>
-</section>
-
 <!-- SPLASH -->
 <section class="screen" id="screen-splash">
   <div class="splash" style="min-height:auto;padding-top:60px"><div>
@@ -318,7 +293,6 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px;border-t
       <button class="btn btn-cyan" onclick="setAuthTab('login');showScreen('auth')">تسجيل الدخول</button>
       <button class="btn" onclick="setAuthTab('reg');showScreen('auth')">إنشاء حساب</button>
     </div>
-    <div style="margin-top:12px"><button class="btn btn-ghost btn-sm" onclick="showScreen('adminlogin')">⚖️ دخول الإدارة</button></div>
     <div class="features">
       <div class="feature">🛡️ <b>وسطاء ضمانات</b> معتمدون ومقيّمون</div>
       <div class="feature">⭐ <b>أتعاب حسب التقييم</b> 3% – 7%</div>
@@ -370,20 +344,13 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px;border-t
 <section class="screen" id="screen-auth">
   <div class="center-wrap"><div class="card auth-card">
     <div style="text-align:center;margin-bottom:16px"><div style="font-size:46px">🤝</div><h2 style="font-size:22px;font-weight:900">وسيط · WASIT</h2></div>
-    <div class="note info" id="demoCreds" hidden style="font-size:12px;margin:0 0 12px">🧪 حسابات تجريبية (كلمة المرور لكلها <b class="ltr">123456</b>) — كل دور يفتح واجهته فقط:<br>
-      👤 <b>User:</b> <span class="ltr" style="display:inline-block">buyer</span> أو <span class="ltr" style="display:inline-block">seller</span> (اسم مستخدم أو البريد) · 🛡️ <b>Mediator:</b> <span class="ltr" style="display:inline-block">broker@wasit.demo</span> · 👑 <b>Owner:</b> من زر «دخول الإدارة» أدناه<br>
-      رابط دعوة وسيط تجريبية: <a href="#invite=demoinvitependingabc123xyz" onclick="setTimeout(()=>location.reload(),50)" style="color:var(--cyan)">افتح الدعوة</a><br>
-      🔐 بوابة الإدارة: اسم المستخدم <b class="ltr">wasit_admin</b> · كلمة المرور <b class="ltr">Admin@12345</b></div>
-    <div class="field" style="margin-bottom:10px"><label>نوع الدخول</label>
-      <div class="auth-tabs" style="margin:0"><button type="button" id="ltUser" class="on" onclick="setLoginType('user')">👤 مستخدم عادي</button><button type="button" id="ltAdmin" onclick="setLoginType('admin')">⚖️ مدير التطبيق</button></div>
-      <div class="hint" style="font-size:11px;color:var(--muted);margin-top:4px">اختيار «مدير» لا يمنح أي صلاحية — الصلاحيات تُتحقق في الخادم عند كل عملية.</div></div>
     <div class="auth-tabs"><button id="tabLogin" class="on" onclick="setAuthTab('login')">دخول</button><button id="tabReg" onclick="setAuthTab('reg')">حساب جديد</button></div>
     <form id="loginForm" onsubmit="return doLogin(event)">
       <div class="field"><label>البريد الإلكتروني أو اسم المستخدم</label><input type="text" id="lEmail" class="ltr" autocomplete="username"></div>
       <div class="field"><label>كلمة المرور</label><input type="password" id="lPass" class="ltr" autocomplete="current-password"></div>
       <div class="error" id="lErr"></div>
       <button type="submit" class="btn btn-primary btn-block" id="lBtn">تسجيل الدخول</button>
-      <div style="text-align:center;margin-top:10px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap"><button type="button" class="btn btn-ghost btn-sm" onclick="resetPass()">نسيت كلمة المرور؟</button><button type="button" class="btn btn-ghost btn-sm" onclick="showScreen('adminlogin')">⚖️ دخول الإدارة</button></div>
+      <div style="text-align:center;margin-top:10px"><button type="button" class="btn btn-ghost btn-sm" onclick="resetPass()">نسيت كلمة المرور؟</button></div>
     </form>
     <form id="regForm" hidden onsubmit="return doRegister(event)">
       <div class="row-2">
@@ -411,12 +378,18 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px;border-t
   <div class="center-wrap"><div class="card auth-card" style="border-color:rgba(34,211,238,.4)">
     <div style="text-align:center;margin-bottom:16px"><div style="font-size:46px">⚖️</div><h2 style="font-size:20px;font-weight:900">دخول إدارة وسيط</h2><p style="color:var(--muted);font-size:12px">بوابة خاصة بمالك المنصة — باسم مستخدم وكلمة مرور</p></div>
     <form onsubmit="return adminLogin(event)">
-      <div class="field"><label>اسم المستخدم</label><input type="text" id="auUser" class="ltr" autocomplete="username" placeholder="wasit_admin" maxlength="30"></div>
+      <div class="field"><label>اسم المستخدم (ليس البريد الإلكتروني)</label><input type="text" id="auUser" class="ltr" autocomplete="username" placeholder="wasit_admin" maxlength="30"><div class="hint">حروف إنجليزية وأرقام و _ فقط — تحدده من لوحة المالك → 🔐 حساب الإدارة</div></div>
       <div class="field"><label>كلمة المرور</label><input type="password" id="auPass" class="ltr" autocomplete="current-password"></div>
       <div class="error" id="auErr"></div>
       <button type="submit" class="btn btn-cyan btn-block btn-lg" id="auBtn">دخول الإدارة 🔐</button>
     </form>
     <div id="auLock" class="note bad" hidden></div>
+    <details style="margin-top:14px"><summary style="cursor:pointer;color:var(--muted);font-size:12px">🛠️ التهيئة الأولى لحساب الأونر (مرة واحدة — تتطلب مفتاح الإعداد من الخادم)</summary>
+      <div class="note info" style="font-size:11px">يعمل فقط عندما يكون Backend منشورًا وفيه <b class="ltr">OWNER_SETUP_KEY</b>. لا توجد بيانات افتراضية في الإنتاج.</div>
+      <div class="field"><label>مفتاح الإعداد (من functions/.env)</label><input type="password" id="suKey" class="ltr"></div>
+      <div class="row-2"><div class="field"><label>اسم مستخدم الأونر</label><input type="text" id="suUser" class="ltr" maxlength="24"></div><div class="field"><label>كلمة المرور (10+)</label><input type="password" id="suPass" class="ltr"></div></div>
+      <div class="error" id="suErr"></div>
+      <button class="btn btn-primary btn-sm" id="suBtn" onclick="ownerSetup()">إنشاء حساب الأونر</button></details>
     <div style="text-align:center;margin-top:12px"><button class="btn btn-ghost btn-sm" onclick="showScreen('auth')">← دخول المستخدمين</button></div>
   </div></div>
 </section>
@@ -941,11 +914,30 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px;border-t
 </div>
 
 <script>
+/* ============ إعدادات Firebase المثبّتة — لا تظهر شاشة ربط لأي زائر ============ */
+const HARDCODED_CONFIG = {
+  "apiKey": "AIzaSyD5Dic9s9Uti52_gd0myuCoRhTr6br55GA",
+  "authDomain": "wasit-4de70.firebaseapp.com",
+  "projectId": "wasit-4de70",
+  "storageBucket": "wasit-4de70.firebasestorage.app",
+  "messagingSenderId": "198931313441",
+  "appId": "1:198931313441:web:54734e6c2254d79b518460"
+};
+localStorage.setItem('wasit_firebase', JSON.stringify(HARDCODED_CONFIG));
+localStorage.setItem('firebaseConfig', JSON.stringify(HARDCODED_CONFIG));
+localStorage.setItem('wasit_cfg', JSON.stringify(HARDCODED_CONFIG));
+localStorage.setItem('wasit_fb_cfg', JSON.stringify(HARDCODED_CONFIG));
+/* الوضع التجريبي معطّل نهائيًا في النسخة المنشورة */
+localStorage.removeItem('wasit_demo_on');
+
 /* ============ WASIT · real app on Firebase ============ */
-const APP_VERSION='v6.0 👑 WASEET — 3 واجهات مستقلة';
+const APP_VERSION='v6.1 👑 WASEET';
 const LS_CFG='wasit_fb_cfg';
+/* 🔐 الدخول السري للإدارة: لا يظهر إلا عبر الرابط  #wasit-owner-2026 */
+const OWNER_HASH='#wasit-owner-2026';
 const SDK='https://www.gstatic.com/firebasejs/10.12.5/';
 let FB={}, auth=null, db=null, me=null, myDoc=null, isAdmin=false;
+let API=null, BACKEND=false; // Cloud Functions client + حالة توفر الخادم
 let APP={wallet:'',walletName:'وسيط - WASIT'};
 let curDeal=null, unsubDeal=null, unsubChat=null, unsubList=null;
 let kycDocs={front:null,back:null,selfie:null}, receiptData=null, payKind='buyer';
@@ -968,11 +960,15 @@ service cloud.firestore {
   match /databases/{db}/documents {
     function signed() { return request.auth != null; }
     function admin() { return signed() && exists(/databases/$(db)/documents/admins/$(request.auth.uid)); }
+    // ===== الإنتاج: المسؤولون يُنشأون من الخادم فقط (ownerSetup) =====
     match /admins/{uid} {
-      allow read: if true;
-      allow create: if signed() && request.auth.uid == uid;
-      allow delete: if admin();
+      allow get: if signed() && (request.auth.uid == uid || admin());
+      allow list: if admin();
+      allow create, update, delete: if false;   // Cloud Functions (Admin SDK) تتخطى القواعد
     }
+    // بيانات دخول الأونر (bcrypt hash) وحدود المحاولات — للخادم فقط، لا يقرأها المتصفح
+    match /ownerAuth/{u} { allow read, write: if false; }
+    match /rateLimits/{k} { allow read, write: if false; }
     match /config/{d} { allow read: if true; allow write: if admin(); }
     // أسماء المستخدمين الفريدة — تُنشأ مرة واحدة ولا تُعدَّل
     match /usernames/{u} {
@@ -984,9 +980,10 @@ service cloud.firestore {
     match /adminAuth/{u} { allow read: if true; allow write: if admin(); }
     match /users/{uid} {
       allow read: if signed();
+      // التسجيل العام يُنشئ دور user فقط؛ broker/owner تُكتب من الخادم (registerMediator/ownerSetup) حصرًا
       allow create: if signed() && request.auth.uid == uid
                     && request.resource.data.kycStatus == 'none'
-                    && (!('role' in request.resource.data) || request.resource.data.role in ['user','broker']);
+                    && (!('role' in request.resource.data) || request.resource.data.role == 'user');
       // المستخدم لا يستطيع اعتماد توثيقه بنفسه (pending فقط) ولا تغيير دوره
       allow update: if admin()
         || (signed() && request.auth.uid == uid
@@ -1038,27 +1035,17 @@ service cloud.firestore {
     }
     // ===== نظام الوسطاء المعتمدين =====
     function inv(t) { return get(/databases/$(db)/documents/invites/$(t)).data; }
-    match /invites/{token} {
-      allow get: if true;                      // التوكن عشوائي غير قابل للتخمين
-      allow list: if admin();
-      allow create, delete: if admin();
-      allow update: if admin()
-        || (signed() && resource.data.status == 'pending'
-            && resource.data.email == request.auth.token.email
-            && request.resource.data.status == 'accepted'
-            && request.resource.data.usedBy == request.auth.uid);
+    // الدعوات: تُنشأ وتُستهلك من الخادم فقط (createInvite / registerMediator). المتصفح يرى القائمة للأونر فقط.
+    match /invites/{id} {
+      allow get, list: if admin();
+      allow update: if admin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']);  // إلغاء فقط
+      allow create, delete: if false;
     }
     match /brokers/{uid} {
-      // كل وسيط يقرأ ملفه فقط؛ الإدارة تقرأ الكل. (بيانات الوسيط للطرفين تأتي من brokerSnapshot داخل الصفقة)
-      allow get: if signed() && (request.auth.uid == uid || admin());
-      allow list: if admin();
-      // لا يُنشأ حساب وسيط إلا بدعوة صالحة مطابقة لبريد المستخدم
-      allow create: if signed() && request.auth.uid == uid
-        && request.resource.data.status == 'pending'
-        && request.resource.data.commissionRate == inv(request.resource.data.inviteToken).commissionRate
-        && inv(request.resource.data.inviteToken).email == request.auth.token.email
-        && inv(request.resource.data.inviteToken).status == 'pending'
-        && inv(request.resource.data.inviteToken).expiresAt > request.time.toMillis();
+      // قراءة: الوسيط ملفه، الأونر الكل، والمستخدم العادي يقرأ الوسطاء المعتمدين فقط (لاختيار وسيط)
+      allow get: if signed() && (request.auth.uid == uid || admin() || resource.data.status == 'approved');
+      allow list: if admin() || (signed() && request.query.limit <= 100);
+      allow create: if false;   // registerMediator على الخادم حصرًا
       // الوسيط يعدّل ملفه الشخصي فقط (photo/bio/specialties/publicContact) — كل ما عداه مقفول
       allow update: if admin()
         || (signed() && request.auth.uid == uid
@@ -1156,7 +1143,10 @@ function openModal(i){$(i).hidden=false;}function closeModal(i){$(i).hidden=true
 function viewImg(s){$('imgSrc').src=s;openModal('imgModal');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')['payModal','dispModal','imgModal'].forEach(closeModal);});
 /* ===== حارس التوجيه: كل شاشة لها أدوار مسموحة. (الحماية الحقيقية في قواعد Firestore؛ هذا يمنع فتح واجهة دور آخر من المتصفح) ===== */
-const PUBLIC_SCREENS=['setup','splash','auth','adminlogin','invite','verify'];
+const PUBLIC_SCREENS=['splash','auth','adminlogin','invite','verify'];
+/* بوابة الإدارة لا تُفتح إلا إذا فُتح الموقع برابط الهاش السري */
+let OWNER_GATE=(location.hash===OWNER_HASH);
+if(OWNER_GATE){try{history.replaceState(null,'',location.pathname);}catch(e){}}
 const SCREEN_ROLES={
   dashboard:['user'],seller:['user'],buyer:['user'],deal:['user','owner','mediator'],kyc:['user','mediator'],greq:['user'],gview:['user','owner','mediator'],
   broker:['mediator'],bkprofile:['mediator'],
@@ -1165,6 +1155,8 @@ const SCREEN_ROLES={
 function myRoleName(){if(!me)return null;if(isAdmin)return 'owner';if(myBroker)return 'mediator';return 'user';}
 function homeFor(role){return role==='owner'?'owner':role==='mediator'?'broker':'dashboard';}
 function showScreen(n){
+  if(n==='adminlogin'&&!OWNER_GATE)n='splash';        // مخفية تمامًا عن العامة
+  if(n==='setup')n='splash';                             // شاشة الربط حُذفت نهائيًا
   if(!PUBLIC_SCREENS.includes(n)){
     const role=myRoleName();
     if(!role){toast('سجّل الدخول أولًا','bad');n='auth';}
@@ -1176,23 +1168,16 @@ function showScreen(n){
   $('adminBtn').hidden=role!=='owner';$('brokerBtn').hidden=role!=='mediator';$('homeBtn').hidden=role!=='user';
   try{history.replaceState(null,'',location.pathname+'#'+n);}catch(e){}
   window.scrollTo({top:0,behavior:'smooth'});}
-window.addEventListener('hashchange',()=>{const h=(location.hash||'').slice(1);if(h&&!h.startsWith('invite=')&&!h.startsWith('d=')&&$('screen-'+h).id)showScreen(h);});
+window.addEventListener('hashchange',()=>{
+  if(location.hash===OWNER_HASH){OWNER_GATE=true;try{history.replaceState(null,'',location.pathname);}catch(e){}if(!me)showScreen('adminlogin');return;}
+  const h=(location.hash||'').slice(1);if(h&&!h.startsWith('invite=')&&!h.startsWith('d=')&&$('screen-'+h).id)showScreen(h);});
 function busy(id,on,txt){const b=$(id);b.disabled=on;if(on){b.dataset.t=b.innerHTML;b.innerHTML='<span class="spinner"></span> '+(txt||'جاري…');}else if(b.dataset.t)b.innerHTML=b.dataset.t;}
 function shrink(file,max,q){return new Promise((res,rej)=>{if(!file||!file.type.startsWith('image/'))return rej('صورة فقط');const r=new FileReader();r.onload=e=>{const im=new Image();im.onload=()=>{let w=im.width,h=im.height;if(w>max||h>max){const k=Math.min(max/w,max/h);w=Math.round(w*k);h=Math.round(h*k);}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(im,0,0,w,h);res(c.toDataURL('image/jpeg',q));};im.onerror=()=>rej('صورة تالفة');im.src=e.target.result;};r.readAsDataURL(file);});}
 
 /* ---------- setup / boot ---------- */
-$('rulesTxt').textContent=RULES;
+window.WASEET_RULES=RULES; // للنسخ من Console عند الحاجة: copy(WASEET_RULES)
 $('verTag').textContent=APP_VERSION;
-function resetApp(){if(confirm(DEMO?'الخروج من الوضع التجريبي والانتقال لشاشة ربط النسخة الحقيقية؟':'إزالة ربط قاعدة البيانات من هذا المتصفح؟')){localStorage.removeItem(LS_CFG);localStorage.removeItem(DEMO_FLAG);localStorage.removeItem('wasit_demo_user');location.reload();}}
-function saveConfig(){
-  const raw=$('cfgInput').value.trim();const err=$('cfgErr');
-  try{
-    const m=raw.match(/\{[\s\S]*\}/);if(!m)throw 0;
-    const cfg=JSON.parse(m[0].replace(/([{,]\s*)([A-Za-z0-9_]+)\s*:/g,'$1"$2":').replace(/'/g,'"').replace(/,\s*}/g,'}'));
-    if(!cfg.apiKey||!cfg.projectId)throw 0;
-    localStorage.setItem(LS_CFG,JSON.stringify(cfg));location.reload();
-  }catch(e){err.textContent='الصيغة غير صحيحة — انسخ كائن firebaseConfig كاملًا بأقواسه.';}
-}
+function resetApp(){if(confirm('مسح بيانات هذا المتصفح المحلية وإعادة التحميل؟')){localStorage.removeItem(DEMO_FLAG);localStorage.removeItem('wasit_demo_user');localStorage.removeItem('wasit_demo_db');location.reload();}}
 /* =========================================================
    🧪 الوضع التجريبي — محاكاة محلية كاملة لـ Firebase Auth + Firestore
    (نفس الواجهة البرمجية، فيعمل كل كود التطبيق دون تعديل)
@@ -1338,30 +1323,21 @@ function seedDemo(L){
   DB._seeded=true;L.persist();
 }
 async function boot(){
-  if(localStorage.getItem(DEMO_FLAG)==='1'){
-    DEMO=true;const L=makeLocalFirebase();seedDemo(L);
-    FB={...L.au,...L.fs};auth=L.au.getAuth();db={};
-    // إنشاء اسم مستخدم الأدمن التجريبي (hash حقيقي يُحسب مرة واحدة)
-    const ps=L.DB()._pendingAdminSeed;
-    if(ps){const salt=rnd(16);const hash=await pwHash(ps.pass,salt);const key=await sha256('wasit-key:'+ps.user+':'+ps.pass+':'+salt);
-      L.DB().adminAuth[ps.user]={uid:ps.uid,email:ps.email,salt,hash,enc:xorEnc(ps.fbPass,key),updatedAt:{__ts:Date.now()},fails:0};delete L.DB()._pendingAdminSeed;L.persist();}
-    $('demoBar').hidden=false;$('demoCreds').hidden=false;$('verTag').textContent=APP_VERSION+' · 🧪 DEMO';
-    if(!localStorage.getItem('wasit_demo_user'))localStorage.setItem('wasit_demo_user','admin@wasit.demo');
-    await loadAppConfig();
-    FB.onAuthStateChanged(auth,onAuth);
-    return;
-  }
-  const raw=localStorage.getItem(LS_CFG);
-  if(!raw){$('boot').hidden=true;showScreen('setup');return;}
+  // الإعدادات مثبّتة داخل الملف — لا شاشة ربط ولا وضع تجريبي للزوار
   try{
-    const cfg=JSON.parse(raw);
-    const [a,au,fs]=await Promise.all([import(SDK+'firebase-app.js'),import(SDK+'firebase-auth.js'),import(SDK+'firebase-firestore.js')]);
+    const cfg=HARDCODED_CONFIG;
+    const [a,au,fs,fx]=await Promise.all([import(SDK+'firebase-app.js'),import(SDK+'firebase-auth.js'),import(SDK+'firebase-firestore.js'),import(SDK+'firebase-functions.js')]);
     FB={...au,...fs};
     const app=a.initializeApp(cfg);
     auth=au.getAuth(app);db=fs.getFirestore(app);
+    // Backend (Cloud Functions). إن لم تكن منشورة بعد، تعمل الواجهة بالمسار القديم (قواعد Firestore فقط).
+    try{const f=fx.getFunctions(app,cfg.functionsRegion||'europe-west1');API=name=>async payload=>{const r=await fx.httpsCallable(f,name)(payload||{});return r.data;};
+      await fetch((cfg.functionsBase||('https://'+(cfg.functionsRegion||'europe-west1')+'-'+cfg.projectId+'.cloudfunctions.net'))+'/health',{mode:'cors'}).then(r=>{BACKEND=r.ok;}).catch(()=>{BACKEND=false;});
+    }catch(e){BACKEND=false;}
+    console.info('WASEET backend:',BACKEND?'ONLINE (server-side auth/fees)':'OFFLINE (rules-only mode)');
     FB.onAuthStateChanged(auth,onAuth);
     loadAppConfig();
-  }catch(e){console.error(e);$('boot').innerHTML='<div class="card" style="max-width:460px"><b>فشل الاتصال بقاعدة البيانات</b><p style="color:var(--muted);font-size:13px;margin:10px 0">'+esc(e.message||e)+'</p><button class="btn btn-primary" onclick="resetApp()">إعادة الربط</button></div>';}
+  }catch(e){console.error(e);$('boot').innerHTML='<div class="card" style="max-width:460px"><b>تعذر الاتصال بالخادم</b><p style="color:var(--muted);font-size:13px;margin:10px 0">تحقق من اتصال الإنترنت ثم أعد المحاولة.</p><button class="btn btn-primary" onclick="location.reload()">إعادة المحاولة</button></div>';}
 }
 async function loadAppConfig(){
   try{const s=await FB.getDoc(FB.doc(db,'config','app'));if(s.exists())APP={...APP,...s.data()};}catch(e){}
@@ -1380,8 +1356,7 @@ async function onAuth(u){
   if(!s.exists()){await FB.setDoc(ref,{name:u.displayName||u.email.split('@')[0],email:u.email,phone:'',kycStatus:'none',role:'user',createdAt:FB.serverTimestamp()});s=await FB.getDoc(ref);}
   myDoc=s.data();
   const ad=await FB.getDoc(FB.doc(db,'admins',u.uid));isAdmin=ad.exists();
-  // تأسيس أول مسؤول فقط عندما لا يوجد أي مسؤول (بعدها تُغلق القاعدة بـ allow create: if false)
-  if(!isAdmin){try{const all=await FB.getDocs(FB.collection(db,'admins'));if(all.empty&&confirm('لا يوجد مسؤول للمنصة بعد.\nهل تريد جعل هذا الحساب هو مسؤول وسيط (الإدارة)؟')){await FB.setDoc(FB.doc(db,'admins',u.uid),{email:u.email,at:FB.serverTimestamp()});isAdmin=true;toast('⚖️ أصبحت مسؤول المنصة — أغلق إنشاء المسؤولين من قواعد الأمان الآن','ok');}}catch(e){}}
+  // 🔒 لا يوجد أي مسار من المتصفح لإنشاء مسؤول. المسؤولون يُضافون فقط من Firebase Console (مجموعة admins) أو عبر ownerSetup على الخادم.
   $('adminBtn').hidden=!isAdmin;
   $('brokerBtn').hidden=!myBroker;
   paintUser();
@@ -1876,6 +1851,12 @@ async function saveAdminCreds(){
 function xorEnc(text,keyHex){const k=keyHex.match(/../g).map(h=>parseInt(h,16));const b=new TextEncoder().encode(text);return btoa(String.fromCharCode(...b.map((c,i)=>c^k[i%k.length])));}
 function xorDec(b64,keyHex){const k=keyHex.match(/../g).map(h=>parseInt(h,16));const b=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));return new TextDecoder().decode(b.map((c,i)=>c^k[i%k.length]));}
 const AU_LOCK='wasit_admin_lock';
+async function ownerSetup(){const e=$('suErr'),k=$('suKey').value,u=normUser($('suUser').value),p=$('suPass').value;
+  if(!BACKEND||!API)return e.textContent='Backend غير متاح — انشر functions أولًا (firebase deploy --only functions)';
+  if(!k)return e.textContent='أدخل مفتاح الإعداد';if(!/^[a-z0-9_]{3,24}$/.test(u))return e.textContent='اسم مستخدم غير صالح';if(p.length<10)return e.textContent='كلمة المرور 10 أحرف على الأقل';
+  e.textContent='';busy('suBtn',true,'جاري الإعداد…');
+  try{await API('ownerSetup')({setupKey:k,username:u,password:p});toast('✅ تم إنشاء حساب الأونر — سجّل الدخول الآن','ok');$('auUser').value=u;['suKey','suUser','suPass'].forEach(i=>$(i).value='');}
+  catch(ex){e.textContent=ex.message||'فشل الإعداد';}busy('suBtn',false);}
 async function adminLogin(e){
   e.preventDefault();
   const err=$('auErr'),u=normUser($('auUser').value),p=$('auPass').value,lockEl=$('auLock');
@@ -1883,7 +1864,22 @@ async function adminLogin(e){
   if(lock.until>Date.now()){lockEl.hidden=false;lockEl.textContent='⛔ تم قفل الدخول مؤقتًا بسبب محاولات خاطئة. حاول بعد '+Math.ceil((lock.until-Date.now())/60000)+' دقيقة.';return false;}
   lockEl.hidden=true;
   if(!u||!p)return err.textContent='أدخل اسم المستخدم وكلمة المرور',false;
+  if(u.includes('@')){
+    err.innerHTML='⚠️ هذه الخانة لـ <b>اسم المستخدم</b> (مثل <span class="ltr">wasit_admin</span>) وليس البريد.<br>لو لم تُنشئ اسم مستخدم للإدارة بعد: ادخل ببريدك من <b>«دخول المستخدمين»</b>، ثم من لوحة المالك → 🔐 حساب الإدارة أنشئه.';
+    $('lEmail').value=u;return false;}
+  if(!/^[a-z0-9_]{3,30}$/.test(u))return err.textContent='اسم المستخدم: حروف إنجليزية صغيرة وأرقام و _ فقط',false;
   err.textContent='';busy('auBtn',true,'جاري التحقق…');
+  // لو لم يُنشأ أي اسم مستخدم للإدارة بعد (نسخة حقيقية جديدة) → وجّه المالك بدل عدّ محاولة خاطئة
+  if(!DEMO){try{const any=await FB.getDocs(FB.query(FB.collection(db,'adminAuth'),FB.limit(1)));
+    if(any.empty){busy('auBtn',false);localStorage.removeItem(AU_LOCK);$('auLock').hidden=false;$('auLock').className='note info';
+      $('auLock').innerHTML='ℹ️ <b>لم يُنشأ اسم مستخدم للإدارة على هذه النسخة بعد.</b><br>(بيانات <span class="ltr">wasit_admin / Admin@12345</span> خاصة بالنسخة التجريبية فقط.)<br><br><b>الحل:</b> اضغط «دخول المستخدمين» وادخل ببريدك <span class="ltr">mohamedahmed.eng85@gmail.com</span> وكلمة مرور حسابك → ستفتح لوحة المالك → <b>🔐 حساب الإدارة</b> → أنشئ اسم المستخدم وكلمة المرور → ثم عد هنا.<div class="actions"><button class="btn btn-primary btn-sm" onclick="showScreen(\'auth\')">← الدخول بالبريد الآن</button></div>';
+      return false;}}catch(e){}}
+  // ===== الإنتاج: التحقق على الخادم (bcrypt + rate-limit) ثم Custom Token =====
+  if(BACKEND&&API){
+    try{const r=await API('ownerLogin')({username:u,password:p});await FB.signInWithCustomToken(auth,r.token);toast('👑 مرحبًا بك في لوحة المالك','ok');}
+    catch(ex){err.textContent=ex.message||'فشل الدخول';}
+    busy('auBtn',false);return false;
+  }
   try{
     const s=await FB.getDoc(FB.doc(db,'adminAuth',u));
     if(!s.exists())throw 0;
@@ -2313,12 +2309,20 @@ async function createInvite(){
   if(!(days>0))return err.textContent='حدد مدة الصلاحية';
   err.textContent='';busy('ivBtn',true,'جاري الإنشاء…');
   try{
-    const token=rnd(24)+Date.now().toString(36);
-    await FB.setDoc(FB.doc(db,'invites',token),{token,name,email,phone,commissionRate:rate,status:'pending',
-      expiresAt:Date.now()+days*864e5,createdBy:me.uid,createdAt:Date.now(),usedBy:null});
-    await audit('invite_create','invite:'+token,name+' · '+email+' · '+rate+'%');
+    let token;
+    if(BACKEND&&API){
+      // الإنتاج: الخادم يولّد توكن 256-bit ويخزّن hash فقط — الرابط يظهر مرة واحدة الآن
+      const r=await API('createInvite')({name,email,phone,commissionRate:rate,days});token=r.token;
+      const link=location.origin+location.pathname+'#invite='+token;
+      copyText(link);
+      $('ivErr').innerHTML='<div class="note ok" style="margin:8px 0">🔗 <b>انسخ الرابط الآن — لن يظهر مرة أخرى</b> (الخادم لا يحتفظ إلا ببصمته):<div class="lnk">'+esc(link)+'</div><button class="btn btn-cyan btn-sm" onclick="copyText(\''+link+'\')">📋 نسخ</button></div>';
+    }else{
+      token=rnd(24)+Date.now().toString(36);
+      await FB.setDoc(FB.doc(db,'invites',token),{token,name,email,phone,commissionRate:rate,role:'mediator',status:'pending',expiresAt:Date.now()+days*864e5,createdBy:me.uid,createdAt:Date.now(),usedBy:null});
+      await audit('invite_create','invite:'+token,name+' · '+email+' · '+rate+'%');
+      copyText(location.origin+location.pathname+'#invite='+token);
+    }
     ['ivName','ivEmail','ivPhone'].forEach(i=>$(i).value='');
-    copyText(location.origin+location.pathname+'#invite='+token);
     toast('🔗 تم إنشاء الدعوة ونسخ الرابط','ok');loadInvites();
   }catch(e){err.textContent='فشل: '+e.message;}
   busy('ivBtn',false);
